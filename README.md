@@ -11,6 +11,8 @@ Python
 Npm
 
 # fastapi server
+pip install python
+pip install venv
 - [Python 3.9](https://www.python.org/downloads/)
 - [Pip](https://pypi.org/project/pip/)
 - [Docker](https://www.docker.com/products/docker-desktop)
