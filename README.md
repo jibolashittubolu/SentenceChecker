@@ -21,7 +21,7 @@ activate
 cd ../
 pip install fastapi uvicorn
 pip install language-tool-python
-
+pip install spacy
 pip install -r requirements.txt
 cd ../app
 uvicorn main:app --reload
