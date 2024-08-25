@@ -1,0 +1,33 @@
+//ROOT GET
+###  
+GET http://localhost:8000/
+Content-Type: application/json
+ 
+{
+
+}
+
+//ROOT GET
+###   
+GET http://localhost:8000/api/v1/users
+Content-Type: application/json
+ 
+{
+
+}
+
+
+//ROOT GET
+###   
+# POST http://localhost:8000/sentenceCheck
+POST http://localhost:8000/api/v1/sentenceChecker/checkSentence
+Content-Type: application/json
+ 
+{
+    "text": "page.tsx:50 <p><img src='https://i.ibb.co/vsbcKv5/i92g6x0q4fecshz-laptop-mouse-jpg.jpg'></p> "
+}
+ //   "text": "Is they ok?. Bring me a chari, he said. I have since not me an undereliable person such as Somi. I wanted to ate him up"
+
+
+
+

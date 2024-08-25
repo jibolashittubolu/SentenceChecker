@@ -1,0 +1,1 @@
+export {getFirst5AndLast5Words} from './stringManipulation'

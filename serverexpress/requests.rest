@@ -1,0 +1,40 @@
+@base_url = http://localhost:5000
+@API_KEY = aim_for_better
+
+//CREATE WALLET
+###  
+POST {{$base_url}}/api/
+Content-Type: application/json
+ 
+{
+    "currency": "ngn"
+}
+
+//GET WALLET 
+###        
+GET http://localhost:5000/api/v1
+Content-Type: application/json
+ 
+{
+
+}
+
+
+//GET WALLET 
+###       
+GET http://localhost:5000/api/v1/sentenceChecker
+Content-Type: application/json
+ 
+{
+
+}
+
+
+//CHECK SENTENCE   
+###        
+POST http://localhost:5000/api/v1/sentenceChecker/checkSentence
+Content-Type: application/json
+ 
+{  
+    "text": "TO DO fali"
+}
