@@ -1,4 +1,6 @@
-- Each of the 3 folders is required
+Clone the repository. Please note that 
+
+- The 3 folders contained within the repository are all required
 - The clientnext server is the client application
 - The serverexpress is the proxy server
 - The serverfastapi is the upstream server
