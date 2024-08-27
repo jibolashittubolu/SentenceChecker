@@ -11,7 +11,7 @@ interface ConfirmationDialogProps {
     // onCancel: () => void
   }
 
-const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onClose, isModal = true, children, showDefaultCloserButton=true,}) => {
+const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onClose, isModal = true, children, showDefaultCloserButton=true}) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
@@ -47,7 +47,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onClose
         <dialog ref={dialogRef} onClose={onClose} >
             {
             showDefaultCloserButton &&
-            <button onClick={() => dialogRef.current?.close()}>Close (x)</button>
+            <div>
+                <button onClick={() => dialogRef.current?.close()}>Close (x)</button>
+            </div>
             }
             {children}
         </dialog>

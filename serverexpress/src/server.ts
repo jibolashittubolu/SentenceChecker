@@ -5,7 +5,7 @@ import helmet from "helmet";
 import ComponentsRouter from './components/components.router';
 import { logger } from "./utils";
 import errorHandler from "./core/middlewares/errors.middleware";
-
+import rateLimit from "express-rate-limit";
 
 //For env File 
 // dotenv.config();
@@ -28,7 +28,10 @@ process.on("uncaughtException", (err: Error) => {
 
 
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: '1024kb' }));
+app.use(express.urlencoded({ limit: '1024kb', extended: true }));
+
 // // // parse application/x-www-form-urlencoded
 // app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -38,9 +41,17 @@ app.use(express.json());
 // }))
 
 app.use(helmet());
-app.disable("x-powered-by");
+app.disable("x-powered-by"); 
 
 
+const limiter = rateLimit({
+  // windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: parseInt(process.env.RATE_LIMIT_RESET_SECONDS || "10000"), // 10 seconds
+  // max: 100, // limit each IP to 100 requests per window
+  max: parseInt(process.env.RATE_LIMIT_ATTEMPTS || "10"), // limit each IP to 60 requests per window
+});
+
+app.use(limiter);
 app.use("/api", ComponentsRouter);
 
 

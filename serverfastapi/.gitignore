@@ -4,6 +4,12 @@
 /Scripts
 __pycache__/
 pyvenv.cfg
+/app/.env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # from other sources
 .idea

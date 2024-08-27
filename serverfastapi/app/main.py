@@ -14,7 +14,8 @@ load_dotenv()
 PORT = os.getenv("PORT", 6000)
 print("PORT IS: ,", PORT)
 
-
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS").split(",")
+print(ALLOWED_ORIGINS)
 # Initialize FastAPI app
 app = FastAPI()
 
@@ -24,7 +25,8 @@ tool = language_tool_python.LanguageTool('en-US')
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8002"],  # Update with your frontend origin
+    allow_origins= ALLOWED_ORIGINS ,  # Update with your frontend origin
+    # allow_origins=["http://localhost:3000", "http://localhost:8002"],  # Update with your frontend origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -10,6 +10,8 @@ import { debounce } from "lodash"
 import { CancelSvg, RedoSvg, SettingsSvg, UndoSvg } from "@/components/icons/svgs"
 import { getFirst5AndLast5Words } from "@/utils/stringManipulation"
 import { ConfirmationDialog } from "@/components/dialog"
+import { FadeInDialog } from "@/components/dialog/FadeInDialog"
+import { generateRandomString } from "@/utils/random/generateRandomString"
 
 type TypeResSentenceChecker = {
     // data: {
@@ -49,6 +51,7 @@ type TypeSuccess = {
 type TypeInputOrOutputCopiedLiteral = "inputValueCopied" | "outputValueCopied"
 type TypeInputOrOutputValueLiteral = "inputValue" | "outputValue"
 type TypeTemporaryStateFieldLiteral = "autoSaveDelay" | "sentenceCheckerApiDelay"
+type TypeDialogType = "ConfirmationDialog" | "FadeInDialog"
 
 type TypeSavedHistoryEntry = {
     id: string,
@@ -75,10 +78,26 @@ type TypeInitialTryitState = {
     },
     sentenceCheckerApiDelay: number,
     autoSaveDelay: number,
-    dialog: {
-        isOpen: boolean,
-        isModal: boolean,
-        children: ReactNode
+    // dialog: {
+    //     isOpen: boolean,
+    //     isModal: boolean,
+    //     children: ReactNode
+    // },
+    dialogs: {
+        confirmationDialog: {
+            id: number,
+            isOpen: boolean,
+            isModal: boolean,
+            children: ReactNode
+            // children: 
+        },
+        fadeInDialog:{
+            id: number,
+            isOpen: boolean,
+            isModal: boolean,
+            children: ReactNode
+            // children: 
+        } 
     },
     temporaryStates: {
         autoSaveDelay: number,
@@ -111,7 +130,9 @@ type TypeTryitComponentFunctions = {
     // setSavedHistoryInputValueHistory: (args: {savedHistory: TypeSavedHistoryEntry[]}) => void
     fetchInputHistory: () => void,
     saveDataToSessionStorage: (args: {text: string}) => void,
-    handleDialog: (args: {isOpen: boolean, isModal?:boolean}) => void,
+    handleDialog: (args: {isOpen: boolean, isModal?:boolean, whichDialog: TypeDialogType}) => void,
+    // handleFadeInDialog: (args: {isOpen: boolean, isModal?:boolean}) => void,
+    // handleConfirmationDialog: (args: {isOpen: boolean, isModal?:boolean}) => void,
     clearInputValue: () => void
 }
 const MAX_HISTORY_LENGTH: number = 5
@@ -151,11 +172,30 @@ const Tryit = () => {
         },
         sentenceCheckerApiDelay: 3000,
         autoSaveDelay: 5000,
-        dialog: {
-            isOpen: false,
-            isModal: true,
-            children: "This dialog has no children yet"
-            // children: 
+        // dialog: {
+        //     isOpen: false,
+        //     isModal: true,
+        //     children: "This dialog has no children yet"
+        //     // children: 
+        // },
+        dialogs: {
+            confirmationDialog: {
+                id: 1,
+                isOpen: false,
+                isModal: true,
+                children: "ConfirmationDialog" as TypeDialogType 
+                // children: "This dialog has no children yet. " + generateRandomString({})
+                //if we generate random string here we run into hydration problems but heck no for now
+                // children: 
+            },
+            fadeInDialog:{
+                id: 2,
+                isOpen: false,
+                isModal: true,
+                children: "FadeInDialog" as TypeDialogType
+                // children: "This dialog has no children yet. " + generateRandomString({})
+                // children: 
+            } 
         },
         temporaryStates: {
             autoSaveDelay: 3000,
@@ -164,8 +204,8 @@ const Tryit = () => {
     })
     // const [temporaryComponentStates, setTemporaryComponentStates] = use
 
-    console.log(componentStates.inputValue)
-    console.log(componentStates.outputValue)
+    // console.log(componentStates.inputValue)
+    // console.log(componentStates.outputValue)
     // console.log(componentStates.inputValue.trim() === "")
     const noRetyping = {
         isCheckingSentence : 
@@ -195,8 +235,8 @@ const Tryit = () => {
             componentStates?.inputValueHistory?.currentIndex,
 
         isFirstMatchForHistoryEntryFound: false as boolean,
-        isDialogOpen: 
-            componentStates?.dialog?.isOpen as boolean,
+        isConfirmationDialogOpen: 
+            componentStates?.dialogs?.confirmationDialog.isOpen as boolean,
         lastSavedInputValue : 
             (componentStates?.inputValueHistory?.savedHistory[componentStates?.inputValueHistory?.savedHistory?.length - 1])?.text?.trim() || "" as string
     }
@@ -291,11 +331,21 @@ const Tryit = () => {
         const requestSentenceCheckRemote = async ({inputValue}: {inputValue: string}) : Promise<any> => {
             try{
                 if(inputValue.trim() === ""){
-                    _setErrorMessage({message: "Please fill in the input box with your text/sentence"})
+                    // _setErrorMessage({message: "Please fill in the input box with your text/sentence"})
+                    let message : string = "Please fill in the input box with your text/sentence"
+
+                    let htmlMessage : ReactNode 
+                    htmlMessage = <div>
+                        <span className="text-red-700">Issue : </span>
+                        <span>{message}</span>
+                    </div>
+                    handleDialog({whichDialog: "FadeInDialog", isOpen: true, children: htmlMessage})
+
                     return 
                 }
 
                 clearSuccessAndError()
+                handleDialog({whichDialog:"FadeInDialog", isOpen:false})
                 _setIsCheckingSentence({status: true})
 
 
@@ -322,21 +372,70 @@ const Tryit = () => {
                 });
     
 
+                let message : string = "The text has been checked and the output is ready"
+
+                let htmlMessage : ReactNode 
+                htmlMessage = <div>
+                    <span className="text-green-600">Success : </span>
+                    <span>{message}</span>
+                    <div className="flex flex-row flex-wrap gap-2 mt-1">
+                        <button 
+                        className="bg-black text-white px-2 py-1 rounded-sm"
+                        onClick={()=>{
+                            outputTextAreaRef?.current?.focus();
+                            handleDialog({whichDialog: "FadeInDialog", isOpen: false})
+                        }}  
+                        >Jump to output box</button>
+                        <button 
+                        className="bg-black text-white px-2 py-1 rounded-sm"
+                        onClick={()=>{
+                            // console.log(componentStates.outputValue) //output value wont be available yet. bet ?
+                            handleCopyTextToClipboard({
+                                text: data.data.correctedText,
+                                shouldThrowErrorOnFail: true,
+                                name: "outputValueCopied",
+                                nameStatus: true
+                            })
+                            handleDialog({whichDialog: "FadeInDialog", isOpen: false})
+                        }}
+                        >Copy output</button>
+                    </div>
+                </div>
+                handleDialog({whichDialog: "FadeInDialog", isOpen: true, children: htmlMessage})
+
                 return res
             }
             catch(error: any){
                 console.error(error)
                 // console.log('An error occurred')
+                // _openDialog({whichDialog: "FadeInDialog"})
+                let message: string= "An error occurred while fetching the  correct sentence from the remote server"
+                const addAndShowErrorDiv = (children: ReactNode) => { 
+                    return <div className="text-red-700">{children || message}</div>
+                }
+
+
 
                 _setErrorFull({
-                    message: "An error occurred while fetching the  correct sentence from the remote server",
+                    message,
                     others: error
                 })
+                handleDialog({whichDialog: "FadeInDialog", isOpen: true, children:message })
+
                 const networkError = error?.code === "ERR_NETWORK" && error?.name==="AxiosError" && error?.message==="Network Error"
                 if(networkError){
-                    _setErrorMessage({
-                        message: "There is an issue with your internet connection. Kindly refresh the page or refresh your internet connection"
-                    })
+                    message = "There is an issue with your internet connection. Kindly refresh the page or check your internet connection"
+                    // _setErrorMessage({
+                    //     message
+                    // })
+
+                    let htmlMessage : ReactNode 
+                    htmlMessage = <div>
+                        <span className="text-red-700">Issue : </span>
+                        <span>{message}</span>
+                    </div>
+                    handleDialog({whichDialog: "FadeInDialog", isOpen: true, children: htmlMessage})
+
                 }
                 throw error
             }
@@ -345,69 +444,174 @@ const Tryit = () => {
             }
         }
 
-        const handleDialog = ({isOpen, isModal}:{
+        const handleDialog = ({isOpen, whichDialog, isModal, children}:{
             isOpen: boolean,
-            isModal?:boolean
+            whichDialog: TypeDialogType,
+            isModal?:boolean,
+            children? : ReactNode
         }) => {
-            setComponentStates(prev => ({
-                ...prev,
-                dialog: {
-                    ...prev.dialog,
-                    isOpen, 
-                    isModal: isModal || prev.dialog.isModal
+
+            try{
+                if(whichDialog === "ConfirmationDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            confirmationDialog :{
+                                ...prev.dialogs.confirmationDialog,
+                                isOpen, 
+                                isModal: isModal || prev.dialogs.confirmationDialog.isModal,
+                                children: children || prev.dialogs.confirmationDialog.children
+                            }
+                        }
+                    }))
+                    return 
                 }
-            }))
+                if(whichDialog === "FadeInDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            fadeInDialog :{
+                                ...prev.dialogs.fadeInDialog,
+                                isOpen,
+                                isModal: isModal || prev.dialogs.fadeInDialog.isModal,
+                                children: children || prev.dialogs.fadeInDialog.children
+
+                            }
+                        }
+                    }))
+                    return 
+                }
+                
+            }
+            catch(error){
+                console.error(error)
+            }
         }
 
-        const _openDialog = ({isModal}:{
-            isModal?:boolean
+        const _openDialog = ({ whichDialog}:{
+            whichDialog: TypeDialogType
         }) => {
             // a = true
             // setA(true)
             // a.current = true
 
             // console.log('fired _openDialog')
-            setComponentStates(prev => ({
-                ...prev,
-                dialog: {
-                    ...prev.dialog,
-                    isOpen: true, 
-                    isModal: isModal || prev.dialog.isModal
+            try{
+                if(whichDialog === "ConfirmationDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            confirmationDialog :{
+                                ...prev.dialogs.confirmationDialog,
+                                isOpen: true, 
+                            }
+                        }
+                    }))
+                    return 
                 }
-            }))
+                if(whichDialog === "FadeInDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            fadeInDialog :{
+                                ...prev.dialogs.fadeInDialog,
+                                isOpen: true, 
+                            }
+                        }
+                    }))
+                    return 
+                }
+                
+            }
+            catch(error){
+                console.error(error)
+            }
         }
         
-        const _closeDialog = ({isModal}:{
-            isModal?:boolean
+        const _closeDialog = ({ whichDialog}:{
+            whichDialog: TypeDialogType
         }) => {
             // a=false;
             // setA(false)
             // a.current = false
 
-            setComponentStates(prev => ({
-                ...prev,
-                dialog: {
-                    ...prev.dialog,
-                    isOpen: false, 
-                    isModal: isModal || prev.dialog.isModal
+            try{
+                if(whichDialog === "ConfirmationDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            confirmationDialog :{
+                                ...prev.dialogs.confirmationDialog,
+                                isOpen: false, 
+                            }
+                        }
+                    }))
+                    return 
                 }
-            }))
+                if(whichDialog === "FadeInDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            fadeInDialog :{
+                                ...prev.dialogs.fadeInDialog,
+                                isOpen: false, 
+                            }
+                        }
+                    }))
+                    return 
+                }
+                
+            }
+            catch(error){
+                console.error(error)
+            }
         }
 
-        const _setDialogChildren = ({isOpen, isModal, children}:{
-            isOpen?: boolean,
-            isModal?:boolean,
-            children: ReactNode
+        const _setDialogChildren = ({children, whichDialog}:{
+            // isOpen?: boolean,
+            // isModal?:boolean,
+            children: ReactNode,
+            whichDialog: TypeDialogType
         }) => {
-            setComponentStates(prev => ({
-                ...prev,
-                dialog: {
-                    ...prev.dialog,
-                    isOpen: isOpen || prev.dialog.isOpen, 
-                    isModal: isModal || prev.dialog.isModal,
-                    children: children
+            
+            try{
+                if(whichDialog === "ConfirmationDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            confirmationDialog :{
+                                ...prev.dialogs.confirmationDialog,
+                                children: children
+                            }
+                        }
+                    }))
+                    return 
                 }
-            }))
+                if(whichDialog === "FadeInDialog"){
+                    setComponentStates(prev => ({
+                        ...prev,
+                        dialogs: {
+                            ...prev.dialogs,
+                            fadeInDialog :{
+                                ...prev.dialogs.fadeInDialog,
+                                children: children
+                            }
+                        }
+                    }))
+                    return 
+                }
+                
+            }
+            catch(error){
+                console.error(error)
+            }
         }
 
 
@@ -437,7 +641,7 @@ const Tryit = () => {
             //we keep only 5 at a time
             try {
                 //now we dont need to check if the modal is open because for us to get here, the button to click this was actually rendered
-                console.log(noRetyping.isDialogOpen)
+                console.log(noRetyping.isConfirmationDialogOpen)
                 //check if the modal is open for it, we can add a name prop to the modal and attach the function signature or name to it so that we can keep track of if the modal has been called e.g using console.log(clearAllOldEntriesIncludingCurrent.name) we can attach it to the modal
                 //but for now, since the modal doesnt allow outside clicks we can keep it simple
 
@@ -456,87 +660,10 @@ const Tryit = () => {
                 console.error('Error clearing old entries:', error);
             }
             finally{
-                _closeDialog({})
+                _closeDialog({whichDialog: "ConfirmationDialog"})
             }
         };
 
-        // Function to clear all saveHistory entries
-        const _clearAllOldEntriesIncludingCurrent_Deprecated = () => {
-            //we keep only 5 at a time
-            try {
-                //check if the modal is open for it, we can add a name prop to the modal and attach the function signature or name to it so that we can keep track of if the modal has been called e.g using console.log(clearAllOldEntriesIncludingCurrent.name) we can attach it to the modal
-                //but for now, since the modal doesnt allow outside clicks we can keep it simple
-
-                let mostCurrent_IsDialogOpen: boolean = componentStates.dialog.isOpen
-                console.log(mostCurrent_IsDialogOpen)
-                setComponentStates(prev => {
-                    mostCurrent_IsDialogOpen = prev.dialog.isOpen
-                    // console.table(prev)
-                    console.log(mostCurrent_IsDialogOpen)
-                    // console.log(prev.dialog.isOpen)
-                    return prev
-                })
-
-                console.log(mostCurrent_IsDialogOpen)
-
-                
-                if(!mostCurrent_IsDialogOpen){
-                    // console.log(mostCurrent_IsDialogOpen)
-                    // console.log(noRetyping.isDialogOpen)
-                    //i just learnt something new from this, i.e checking a state from within a function will never give the accurate value of the state
-                    //this is because state updates are not usually reflected immediately in the code and mainly because react creates a function from the time it was rendered and keeps using the function reference in memory or something like that
-                    //either use a ref
-                    //or pass the value from a setState function to use the exact value
-                    //the third one which is not recommended as a solution is to decompose the function
-
-                    const dialogChildren:ReactNode = 
-                    <div>
-                        <div>This will clear all previous entries... proceed?</div>
-                        <button className="px-3 bg-gray-600" onClick={()=>{
-                            _clearAllOldEntriesIncludingCurrent(); //why does this not work ???
-                            // _clearAllOldEntriesIncludingCurrent(); //while this works
-                            // _closeDialog({})
-                            // clearAllOldEntriesIncludingCurrent()();
-                            // clearAllOldEntriesIncludingCurrent
-                            }}>Yes</button>
-                        <button className="px-3 bg-gray-600" onClick={()=>_closeDialog({})}>No</button>
-                    </div>
-                    // console.log('fired xyz')
-                    // console.log('dialog open 2 is: ',componentStates.dialog.isOpen)
-
-                    //if it is not open, then open it
-                    _openDialog({})
-                    _setDialogChildren({children: dialogChildren})
-                    //break the flow so now, only the children has access to the main function _clearOldEntriesIncludingCurrent, since the modal(only if it is modal o) has blocked the view of the initial button that called it.
-                    //if we dont use a modal to block the view, it means that if we tap the button again, we will bypass this. How do we ensure that only the modal can truly call the main function to the end?
-                    //do we check the event and ensure the pointer came from the dialogChildren and only from the dialogChildren exactly?
-                    //or, should we refactor the button to ensure that pressing it can only render this modal. Its the modal that will now actually call this main function. So even if we press 10 times, it will only render the modal and do nothing more. Only the modal has access to this clearingOldEntriesCurrent function.
-                    //the second option is better and cleaner. We must decompose this function
-                    
-                    return 
-                }
-
-                console.log('isOpen finally ran: ',)
-
-                const existingHistory = sessionStorage.getItem('saveHistory');
-                if (existingHistory) {
-                    // sessionStorage.setItem('saveHistory', JSON.stringify([]));
-                    sessionStorage.removeItem('saveHistory')
-
-                    
-                    _setSavedHistoryOfInputValueHistory({
-                        savedHistory: []
-                    })
-                    // setSaveHistory(history);
-                }
-            } 
-            catch (error) {
-                console.error('Error clearing old entries:', error);
-            }
-            finally{
-                // _closeDialog({})
-            }
-        };
 
         const openConfirmationDialogForClearingAllOldEntriesIncludingCurrent = () => {
             try {
@@ -544,7 +671,7 @@ const Tryit = () => {
 
                 const dialogChildren:ReactNode = 
                 <div className="md: flex flex-col gap-4">
-                    <div onClick={()=>_closeDialog({})}>
+                    <div onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>
                         <CancelSvg  className="md: text-red-500 w-8 h-8 cursor-pointer " />
                     </div>
                     <div className="md: text-sm">This will clear all entries... proceed?</div>
@@ -556,18 +683,18 @@ const Tryit = () => {
                             // clearAllOldEntriesIncludingCurrent()();
                             // clearAllOldEntriesIncludingCurrent
                         }}>Yes</button>
-                        <button className="md: px-6 py-1.5 rounded bg-black text-white" onClick={()=>_closeDialog({})}>No</button>
+                        <button className="md: px-6 py-1.5 rounded bg-black text-white" onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>No</button>
                     </div>
                 </div>
                 // console.log('fired xyz')
                 // console.log('dialog open 2 is: ',componentStates.dialog.isOpen)
 
                 //if it is not open, then open it
-                _openDialog({})
-                _setDialogChildren({children: dialogChildren})
+                _openDialog({whichDialog: "ConfirmationDialog"})
+                _setDialogChildren({children: dialogChildren, whichDialog: "ConfirmationDialog"})
             } 
             catch (error) {
-                 console.log(error)    
+                 console.error(error)    
             }
         }
 
@@ -704,11 +831,11 @@ const Tryit = () => {
 
         const openConfirmationDialogForSettings = () => {
             try {
-                console.log(noRetyping.isDialogOpen)
+                console.log(noRetyping.isConfirmationDialogOpen)
 
                 const dialogChildren:ReactNode = 
                 <div className="md: flex flex-col gap-4">
-                    <div onClick={()=>_closeDialog({})}>
+                    <div onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>
                         <CancelSvg  className="md: text-red-500 w-8 h-8 cursor-pointer " />
                     </div>
                     <div className="md: text-sm">This will set the interval for each of the below. click save to effect the change</div>
@@ -759,18 +886,18 @@ const Tryit = () => {
                             // clearAllOldEntriesIncludingCurrent()();
                             // clearAllOldEntriesIncludingCurrent
                         }}>Save</button>
-                        <button className="md: px-4 py-2 bg-black text-white text-sm rounded" onClick={()=>_closeDialog({})}>Cancel</button>
+                        <button className="md: px-4 py-2 bg-black text-white text-sm rounded" onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>Cancel</button>
                     </div>
                 </div>
                 // console.log('fired xyz')
                 // console.log('dialog open 2 is: ',componentStates.dialog.isOpen)
 
                 //if it is not open, then open it
-                _openDialog({})
-                _setDialogChildren({children: dialogChildren})
+                _openDialog({whichDialog: "ConfirmationDialog"})
+                _setDialogChildren({children: dialogChildren, whichDialog: "ConfirmationDialog"})
             } 
             catch (error) {
-                 console.log(error)    
+                 console.error(error)    
             }
         }
 
@@ -794,7 +921,7 @@ const Tryit = () => {
                 console.error(error)    
             }
             finally{
-                _closeDialog({})
+                _closeDialog({whichDialog: "ConfirmationDialog"})
             }
         }
 
@@ -971,15 +1098,17 @@ const Tryit = () => {
                 })
             }
             catch(error: any){
-                _setErrorMessage({
-                    message: error?.message || "Could not copy text to clipboard"
-                })
-                if(error?.name === "CustomError"){
-                    _setErrorMessage({
-                        message: error?.message || "Could not copy text to clipboard"
-                    })
-                }
-                // console.error(error)
+                throw error
+
+                // _setErrorMessage({
+                //     message: error?.message || "Could not copy text to clipboard"
+                // })
+                // if(error?.name === "CustomError"){
+                //     _setErrorMessage({
+                //         message: error?.message || "Could not copy text to clipboard"
+                //     })
+                // }
+                // // console.error(error)
             }
         }
 
@@ -1009,15 +1138,26 @@ const Tryit = () => {
                 }, 2000);
             }
             catch(error: any){
-                _setErrorMessage({
-                    message: error?.message || "Could not copy text to clipboard"
-                })
-                if(error?.name === "CustomError"){
-                    _setErrorMessage({
-                        message: error?.message || "Could not copy text to clipboard"
-                    })
-                }
-                // console.error(error)
+
+
+                let message : string = error?.message || "Could not copy text to clipboard"
+
+                let htmlMessage : ReactNode 
+                htmlMessage = <div>
+                    <span className="text-red-700">Issue : </span>
+                    <span>{message}</span>
+                </div>
+                handleDialog({whichDialog: "FadeInDialog", isOpen: true, children: htmlMessage})
+
+                // _setErrorMessage({
+                //     message: error?.message || "Could not copy text to clipboard"
+                // })
+                // if(error?.name === "CustomError"){
+                //     _setErrorMessage({
+                //         message: error?.message || "Could not copy text to clipboard"
+                //     })
+                // }
+                console.error(error)
             }
         }
 
@@ -1156,6 +1296,8 @@ const Tryit = () => {
             fetchInputHistory,
             saveDataToSessionStorage,
             handleDialog,
+            // handleConfirmationDialog,
+            // handleFadeInDialog,
             clearInputValue
         }
     }
@@ -1209,9 +1351,10 @@ const Tryit = () => {
       }
     }, [componentStates.inputValue])
 
-    // Focus the input textarea when the component mounts
     const inputTextAreaRef = useRef<HTMLTextAreaElement>(null)
+    const outputTextAreaRef = useRef<HTMLTextAreaElement>(null) // for jumping to after result. Dont do this automatically though
     useEffect(() => {
+        // Focus the input textarea when the component mounts
         if (inputTextAreaRef.current) {
           inputTextAreaRef.current.focus();
         }
@@ -1239,23 +1382,28 @@ const Tryit = () => {
     return (
 
         <div 
-        className="min-h-screen min-w-[100%] border-gray-700 flex flex-col items-center "
+        className="min-h-screen w-[100%] border-gray-700 flex flex-col items-center"
         // className="min-h-screen min-w-[100vw] border-gray-700 flex flex-col items-center bg-cyan-400"
         >
-            <div className="md:w-11/12 flex flex-col">
+            <div className="
+                    w-11/12 flex flex-col py-4
+                    md:w-11/12 ">
 
                 <section className="md: border-4 border-gray-800">
                     <header>
                         <h1 
+                        className="
+                        text-center my-6 cursor-pointer
+                        md:text-3xl
+                        "
                         aria-label="Sentence Checker "
                         aria-describedby= "This web application can be used to fix and correct mistakes in your write-up"
                         aria-details="This web application can be used to fix and correct mistakes in your write-up"
-                        className="md:text-center my-6 text-4xl cursor-pointer"
                         onClick={()=>reloadPage()}
                         >Text/SentenceChecker</h1>
                     </header>
                 </section>
-                <section className="md: min-h-8 flex flex-col my-4 border-4 border-gray-800" >
+                {/* <section className="md: min-h-8 flex flex-col my-4 border-4 border-gray-800" >
                     <div className="md: h-full flex flex-col gap-2">
                         <p className="md: text-center text-red-600 ">
                             {componentStates.error?.message && componentStates.error.message || ""}
@@ -1264,73 +1412,32 @@ const Tryit = () => {
                             {!componentStates.success?.message && componentStates.success.message || ""}
                         </p>
                     </div>
-                </section>
+                </section> */}
                 <main 
                 className="
-                    min-w-full gap-4 flex flex-col min-h-[90vh] border-4 border-gray-800
-                    md:flex-row md:min-h-[50vh]
+                    min-w-full flex flex-col min-h-[90vh] mt-4
+                    md:flex-row md:min-h-[50vh] md:gap-4 
                 " >
-                    <div
-                    className="
-                    flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 gap-2
-                    ">
-                        <div 
-                        className="w-full flex flex-row justify-between h-auto ">
-                            <span                                 
-                            className="md:basis-5/6 "
-                            >
-                                <span
-                                className="md: border border-blue-400 px-4 py-1 rounded text-sm"
-                                >Output</span>
-                            </span>
-                            <span
-                            className="md: basis-1/6 cursor-pointer"
-                            onClick={()=> componentFunctions().handleCopyTextToClipboard({
-                                text: componentStates.outputValue,
-                                shouldThrowErrorOnFail: true,
-                                name: "outputValueCopied",
-                                nameStatus: true
-                            })}
-                            >
-                                <button
-                                // className="md: float-right font-thin text-sm underline "
-                                disabled={componentStates.textCopiedStatus.outputValueCopied}
-                                className={`md: float-right font-thin text-sm underline ${!noRetyping.isOutputValuePresent ? "" : ""}`}
-                                >
-                                    {
-                                    noRetyping.isOutputValueCopied ? 
-                                    "copied" : 
-                                    "copy"
-                                    }
-                                </button>
-                            </span>
-                        </div>
-                        <div
-                        className="md: h-max grow">
-                            <textarea
-                            ref={inputTextAreaRef}
-                            name="inputValue"
-                            onChange={(event) => componentFunctions().handleTextChange({event})}
-                            className="md: h-full w-full rounded-lg p-3"
-                            // defaultValue={"...the writeup will be displayed here after it has been fixed"}
-                            value={componentStates.inputValue}
-                            />
-                        </div>
-                    </div>
                     <div
                     className="flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 pt-4 gap-2 bg-black">
                         <div 
                         className="
-                        w-full flex flex-row justify-between">
+                        w-full flex flex-col flex-wrap gap-4
+                        md:flex-row md:flex-wrap md:justify-between md:items-center
+                        "
+                        >
                             <span                                 
                             // className="md:basis-5/6 "
+                            className="md:flex-grow-0"
                             >
                                 <span
                                 className="md: border border-gray-300 px-4 py-1 rounded text-sm text-gray-100"
                                 >Output</span>
                             </span>
                             <span 
-                            className="md: text-gray-300 text-sm flex flex-row items-center gap-8">
+                            className="text-gray-300 text-sm flex flex-row flex-wrap items-center justify-between 
+                            md:flex md:flex-grow
+                            ">
                                 <button
                                 disabled={!noRetyping.isInputValuePresent}
                                 className={`md: font-medium ${!noRetyping.isInputValuePresent ? "text-gray-500" : ""}`}
@@ -1348,41 +1455,41 @@ const Tryit = () => {
                                     <RedoSvg />
                                 </button> 
                                 {
+                                // <>
                                 noRetyping.isSavingSentence ?
-                                <span className="w-10">...saving</span> :
+                                <span className="w-10 flex items-center">...saving</span> :
                                 <button
                                 disabled={componentStates.inputValue === noRetyping.lastSavedInputValue || componentStates.inputValue.trim()===""}
                                 className={`md:w-10 ${((componentStates.inputValue === noRetyping.lastSavedInputValue) || componentStates.inputValue.trim()==="")  ? "text-gray-500" : ""}`}
                                 onClick={() => {componentFunctions().saveDataToSessionStorage({text: componentStates.inputValue})}}>
                                     save
                                 </button> 
+                                // </>
                                 }
-                            </span>
-                            {
-                            // noRetyping.isOutputValuePresent &&
-                            <span
-                            // className="basis-1/6 cursor-pointer"
-                            className={`md:cursor-pointer w-12 ${!noRetyping.isOutputValuePresent ? "invisible" : ""}`}
-                            onClick={()=> componentFunctions().handleCopyTextToClipboard({
-                                text: componentStates.outputValue,
-                                shouldThrowErrorOnFail: true,
-                                name: "outputValueCopied",
-                                nameStatus: true
-                            })}
-                            >
-                                <button
-                                // className="md: float-right font-thin text-sm underline "
-                                disabled={noRetyping.isOutputValueCopied}
-                                className={`md: float-right text-sm  text-white ${!noRetyping.isOutputValuePresent ? "" : ""}`}
+                                <span
+                                // className="basis-1/6 cursor-pointer"
+                                className={`contents cursor-pointer w-12 ${!noRetyping.isOutputValuePresent ? "invisible" : ""} md:flex`}
+                                onClick={()=> componentFunctions().handleCopyTextToClipboard({
+                                    text: componentStates.outputValue,
+                                    shouldThrowErrorOnFail: true,
+                                    name: "outputValueCopied",
+                                    nameStatus: true
+                                })}
                                 >
-                                    {
-                                    noRetyping.isOutputValueCopied ? 
-                                    "copied" : 
-                                    "copy"
-                                    }
-                                </button>
+                                    <button
+                                    // className="md: float-right font-thin text-sm underline "
+                                    disabled={noRetyping.isOutputValueCopied}
+                                    className={`md: float-right text-sm  text-white ${!noRetyping.isOutputValuePresent ? "" : ""}`}
+                                    >
+                                        {
+                                        noRetyping.isOutputValueCopied ? 
+                                        "copied" : 
+                                        "copy"
+                                        }
+                                    </button>
+                                </span>
                             </span>
-                            }
+
                         </div>
                         <div
                         className="
@@ -1390,6 +1497,106 @@ const Tryit = () => {
                         ">
                             <textarea
                             name="outputValue"
+                            ref={inputTextAreaRef}
+                            onChange={(event) => componentFunctions().handleTextChange({event})}
+                            className="
+                                flex-grow h-full w-full rounded-lg p-3 placeholder:text-sm 
+                            "
+                            placeholder="...output text will be displayed here and can be edited or copied"
+                            // defaultValue={"...the writeup will be displayed here after it has been fixed"}
+                            value={componentStates.outputValue}
+                            />
+                        </div>
+                    </div>
+                    <div 
+                    className="h-4 my-2
+                                md:hidden
+                    ">
+                            {
+                            // componentStates.isCheckingSentence &&
+                            <LinearIndeterminateProgressBar />
+                            }
+                    </div>
+                    <div
+                    className="flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 pt-4 gap-2 bg-black">
+                        <div 
+                        className="
+                        w-full flex flex-col flex-wrap gap-4
+                        md:flex-row md:flex-wrap md:justify-between md:items-center
+                        "
+                        >
+                            <span                                 
+                            // className="md:basis-5/6 "
+                            className="md:flex-grow-0"
+                            >
+                                <span
+                                className="md: border border-gray-300 px-4 py-1 rounded text-sm text-gray-100"
+                                >Output</span>
+                            </span>
+                            <span 
+                            className="text-gray-300 text-sm flex flex-row flex-wrap items-center justify-between 
+                            md:flex md:flex-grow
+                            ">
+                                <button
+                                disabled={!noRetyping.isInputValuePresent}
+                                className={`md: font-medium ${!noRetyping.isInputValuePresent ? "text-gray-500" : ""}`}
+                                onClick={()=>componentFunctions().clearInputValue()}
+                                >Clear</button>
+                                <button
+                                className={`md: ${!noRetyping.isOlderHistoryEntryExists ? "text-gray-500" : ""}`}
+                                onClick={() => {componentFunctions().handleUndo()}}>
+                                    <UndoSvg />
+                                </button>
+                                <button
+                                // disabled={!noRetyping.isNewerHistoryEntryExists}
+                                className={`md: ${!noRetyping.isNewerHistoryEntryExists ? "text-gray-500" : ""}`}
+                                onClick={() => {componentFunctions().handleRedo()}}>
+                                    <RedoSvg />
+                                </button> 
+                                {
+                                // <>
+                                noRetyping.isSavingSentence ?
+                                <span className="w-10 flex items-center">...saving</span> :
+                                <button
+                                disabled={componentStates.inputValue === noRetyping.lastSavedInputValue || componentStates.inputValue.trim()===""}
+                                className={`md:w-10 ${((componentStates.inputValue === noRetyping.lastSavedInputValue) || componentStates.inputValue.trim()==="")  ? "text-gray-500" : ""}`}
+                                onClick={() => {componentFunctions().saveDataToSessionStorage({text: componentStates.inputValue})}}>
+                                    save
+                                </button> 
+                                // </>
+                                }
+                                <span
+                                // className="basis-1/6 cursor-pointer"
+                                className={`contents cursor-pointer w-12 ${!noRetyping.isOutputValuePresent ? "invisible" : ""} md:flex`}
+                                onClick={()=> componentFunctions().handleCopyTextToClipboard({
+                                    text: componentStates.outputValue,
+                                    shouldThrowErrorOnFail: true,
+                                    name: "outputValueCopied",
+                                    nameStatus: true
+                                })}
+                                >
+                                    <button
+                                    // className="md: float-right font-thin text-sm underline "
+                                    disabled={noRetyping.isOutputValueCopied}
+                                    className={`md: float-right text-sm  text-white ${!noRetyping.isOutputValuePresent ? "" : ""}`}
+                                    >
+                                        {
+                                        noRetyping.isOutputValueCopied ? 
+                                        "copied" : 
+                                        "copy"
+                                        }
+                                    </button>
+                                </span>
+                            </span>
+
+                        </div>
+                        <div
+                        className="
+                            flex-grow bg-red-300 flex flex-col
+                        ">
+                            <textarea
+                            name="outputValue"
+                            ref={outputTextAreaRef}
                             onChange={(event) => componentFunctions().handleTextChange({event})}
                             className="
                                 flex-grow h-full w-full rounded-lg p-3 placeholder:text-sm 
@@ -1401,9 +1608,13 @@ const Tryit = () => {
                         </div>
                     </div>
                 </main>
-                <section className="md: flex flex-col gap-2 mt-4 border-4 border-gray-800 text-xs items-end">
-                    <div>{`Autosave is set to run every ${componentStates.autoSaveDelay/1000} second(s)`}</div>
+                <section 
+                className="
+                    flex flex-col gap-1 mt-4 text-xs items-end
+                    md:gap-2
+                ">
                     <div>{`Sentence checker is set to run every ${componentStates.sentenceCheckerApiDelay/1000} second(s)`}</div>
+                    <div>{`Autosave is set to run every ${componentStates.autoSaveDelay/1000} second(s)`}</div>
                     <div 
                     className="md: flex flex-row items-center gap-4 cursor-pointer" 
                     onClick={()=>componentFunctions().openConfirmationDialogForSettings()}>
@@ -1414,14 +1625,16 @@ const Tryit = () => {
                         className="md: text-red-500 w-4 h-4 cursor-pointer "/>
                     </div>
                 </section>
-                <section className="md: flex flex-col gap-8 mt-16 border-4 border-gray-800 "
-                    >
-                        <div className="md: h-4">
+                <section className="mt-8">
+                        <div className="h-4">
                             {
-                            componentStates.isCheckingSentence &&
+                            // componentStates.isCheckingSentence &&
                             <LinearIndeterminateProgressBar />
                             }
                         </div>
+                </section>
+                <section className="md: flex flex-col gap-8 mt-8 border-4 border-gray-800 "
+                    >
 
                         {/* dont do this, just change the color of the button to a disabled shade or lighter color */}
                         {/* {!componentStates.isCheckingSentence && <button>Run</button>} */}
@@ -1582,17 +1795,30 @@ const Tryit = () => {
                 </section>
                 <section>
                     <ConfirmationDialog 
-                    // key={String(componentStates.dialog.children)}
-                    key={String(componentStates.dialog.isOpen)}
+                    key={String(componentStates.dialogs.confirmationDialog.id)+String(componentStates.dialogs.confirmationDialog.isOpen)}
+                    // key={generateRandomString({})}
+                    // key={String(componentStates.dialogs.confirmationDialog)}
+                    // key={String(componentStates.dialogs.confirmationDialog.isOpen)+String(componentStates.dialogs.confirmationDialog.children)}
                     // key={"abc"}
-                    isOpen={componentStates.dialog.isOpen}
-                    onClose={() => componentFunctions().handleDialog({isOpen: false})} 
+                    isOpen={componentStates.dialogs.confirmationDialog.isOpen}
+                    onClose={() => componentFunctions().handleDialog({isOpen: false, whichDialog: "ConfirmationDialog"})} 
                     showDefaultCloserButton={false}
                     // children={<p>Hello</p>}
                     >
-                        {componentStates.dialog.children}
+                        {componentStates.dialogs.confirmationDialog.children}
                         {/* <p>This is a custom dialog content!</p> */}
                     </ConfirmationDialog>
+                    <FadeInDialog
+                    key={String(componentStates.dialogs.fadeInDialog.id)+String(componentStates.dialogs.fadeInDialog.isOpen)}
+                    // key={generateRandomString({})}
+                    // key={Math.random()}
+                    // key={String(componentStates.dialogs.fadeInDialog.isOpen)+String(componentStates.dialogs.fadeInDialog.children)}
+                    isOpen={componentStates.dialogs.fadeInDialog.isOpen}
+                    onClose={() => componentFunctions().handleDialog({isOpen: false, whichDialog: "FadeInDialog"})} 
+                    // showDefaultCloserButton={false}
+                    >
+                        {componentStates.dialogs.fadeInDialog.children}
+                    </FadeInDialog>
                 </section>
 
             </div>
