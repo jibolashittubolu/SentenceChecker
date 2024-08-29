@@ -1,5 +1,5 @@
 "use client"
-import { ConfirmationDialog } from "@/components/dialog"
+import { ConfirmationDialog } from "@/components/dialogs"
 import { useState, useCallback, ReactNode } from "react"
 
 const Blank = () => {

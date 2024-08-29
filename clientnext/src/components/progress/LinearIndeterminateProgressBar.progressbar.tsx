@@ -42,7 +42,7 @@ const LinearIndeterminateProgressBar = () => {
             width: 100%;
             height: 100%;
             background-color: rgb(5, 114, 206);
-            animation: indeterminateAnimation 1s infinite linear;
+            animation: indeterminateAnimation 5s infinite linear;
             transform-origin: 0% 50%;
         }
         

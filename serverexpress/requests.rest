@@ -32,7 +32,7 @@ Content-Type: application/json
 
 //CHECK SENTENCE   
 ###        
-POST http://localhost:5000/api/v1/sentenceChecker/checkSentence
+POST http://localhost:8001/api/v1/sentenceChecker/checkSentence
 Content-Type: application/json
  
 {  

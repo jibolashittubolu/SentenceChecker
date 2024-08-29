@@ -7,11 +7,12 @@ import { copyTextToClipboard } from "@/utils/clipboard"
 import { LinearIndeterminateProgressBar } from "@/components/progress"
 import { reloadPage } from "@/utils/dom"
 import { debounce } from "lodash"
-import { CancelSvg, RedoSvg, SettingsSvg, UndoSvg } from "@/components/icons/svgs"
+import { CancelSvg, CrescentMoonSvg, GithubSvg, LinkedInSvg, RedoSvg, SettingsSvg, SunSvg, UndoSvg, WebsiteLinkSvg } from "@/components/icons/svgs"
 import { getFirst5AndLast5Words } from "@/utils/stringManipulation"
-import { ConfirmationDialog } from "@/components/dialog"
-import { FadeInDialog } from "@/components/dialog/FadeInDialog"
+import { ConfirmationDialog } from "@/components/dialogs"
+import { FadeInDialog } from "@/components/dialogs/FadeInDialog"
 import { generateRandomString } from "@/utils/random/generateRandomString"
+import DarkModeToggler from "@/components/darkModeToggler/DarkModeToggler.toggler"
 
 type TypeResSentenceChecker = {
     // data: {
@@ -372,22 +373,25 @@ const Tryit = () => {
                 });
     
 
-                let message : string = "The text has been checked and the output is ready"
+                let message : string = "Output is ready"
 
                 let htmlMessage : ReactNode 
                 htmlMessage = <div>
-                    <span className="text-green-600">Success : </span>
-                    <span>{message}</span>
-                    <div className="flex flex-row flex-wrap gap-2 mt-1">
+                    <div 
+                    className="
+                        flex flex-row flex-wrap gap-2 mt-0.5
+                        md:hidden
+                    ">
                         <button 
-                        className="bg-black text-white px-2 py-1 rounded-sm"
+                        className="bg-black text-white px-2 py-1 rounded"
                         onClick={()=>{
+                            outputTextAreaRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             outputTextAreaRef?.current?.focus();
                             handleDialog({whichDialog: "FadeInDialog", isOpen: false})
                         }}  
                         >Jump to output box</button>
                         <button 
-                        className="bg-black text-white px-2 py-1 rounded-sm"
+                        className="bg-black text-white px-2 py-1 rounded"
                         onClick={()=>{
                             // console.log(componentStates.outputValue) //output value wont be available yet. bet ?
                             handleCopyTextToClipboard({
@@ -400,6 +404,11 @@ const Tryit = () => {
                         }}
                         >Copy output</button>
                     </div>
+                    <div className="mt-2">
+                        <span className="text-green-600 ">Success : </span>
+                        <span>{message}</span>
+                    </div>
+
                 </div>
                 handleDialog({whichDialog: "FadeInDialog", isOpen: true, children: htmlMessage})
 
@@ -424,7 +433,7 @@ const Tryit = () => {
 
                 const networkError = error?.code === "ERR_NETWORK" && error?.name==="AxiosError" && error?.message==="Network Error"
                 if(networkError){
-                    message = "There is an issue with your internet connection. Kindly refresh the page or check your internet connection"
+                    message = "Issue with internet connection. Please check your internet connection"
                     // _setErrorMessage({
                     //     message
                     // })
@@ -831,18 +840,20 @@ const Tryit = () => {
 
         const openConfirmationDialogForSettings = () => {
             try {
-                console.log(noRetyping.isConfirmationDialogOpen)
+                // console.log(noRetyping.isConfirmationDialogOpen)
 
                 const dialogChildren:ReactNode = 
-                <div className="md: flex flex-col gap-4">
+                <div className="flex flex-col gap-4 p-6
+                                dark:bg-gray-800 dark:text-gray-200
+                ">
                     <div onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>
-                        <CancelSvg  className="md: text-red-500 w-8 h-8 cursor-pointer " />
+                        <CancelSvg  className="md: text-red-500 w-5 h-5 cursor-pointer " />
                     </div>
-                    <div className="md: text-sm">This will set the interval for each of the below. click save to effect the change</div>
+                    <div className="text-xs md:text-sm ">This will set the interval for each of the below. click save to effect the change</div>
 
-                    <div className="md:flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 text-xs md:text-sm">
                         <div>
-                            <label>auto save every(seconds)</label>
+                            <label className="mb-1">auto save every(seconds)</label>
                             <div>
                                 <input 
                                 type="number" 
@@ -856,37 +867,43 @@ const Tryit = () => {
                                 //use temporary states in the component states
                                 min={MIN_AUTO_SAVE_DELAY/1000}
                                 max={MAX_AUTO_SAVE_DELAY/1000}
-                                className="border-b-4 pt-2"
+                                className="border-b-4 pt-2 pl-2 dark:text-black"
                                 />
                             </div>
                         </div>
                         <div>
-                            <label>check sentence every(seconds)</label>
+                            <label className="mb-1">check sentence every(seconds)</label>
                             <div>
                             <input 
                                 name={"sentenceCheckerApiDelay" as TypeTemporaryStateFieldLiteral}
                                 type="number" 
-                                placeholder="auto save interval" 
+                                placeholder="sentence check interval" 
                                 defaultValue={componentStates.sentenceCheckerApiDelay/1000}
                                 // value={componentStates.temporaryStates.sentenceCheckerApiDelay}
                                 onChange={(event)=>_handleTemporaryStateChange({event}) }
                                 min={MIN_SENTENCE_CHECKER_DELAY/1000}
                                 max={MAX_SENTENCE_CHECKER_DELAY/1000}
-                                className="md: border-b-4 pt-2"
+                                className="md: border-b-4 pt-2 pl-2 dark:text-black"
                                 />
                             </div>
                         </div>
                     </div>
-                    <div className="md:flex flex-row gap-8 mt-8">
+                    <div className="flex flex-row flex-wrap gap-8 mt-6 md:mt-8">
                         <button 
-                        className="md: px-4 py-2 bg-black text-white text-sm rounded"
+                        className="md: px-4 py-1 bg-black text-white text-sm rounded
+                                    dark:border dark:border-gray-500
+                        "
                         onClick={()=>{
                             _setAutoSaveAndSentenceCheckDelay()
                             // _closeDialog({})
                             // clearAllOldEntriesIncludingCurrent()();
                             // clearAllOldEntriesIncludingCurrent
                         }}>Save</button>
-                        <button className="md: px-4 py-2 bg-black text-white text-sm rounded" onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>Cancel</button>
+                        <button 
+                        className="px-4 py-1 bg-black text-white text-sm rounded
+                                    dark:border dark:border-gray-500
+                        " 
+                        onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>Cancel</button>
                     </div>
                 </div>
                 // console.log('fired xyz')
@@ -1356,7 +1373,7 @@ const Tryit = () => {
     useEffect(() => {
         // Focus the input textarea when the component mounts
         if (inputTextAreaRef.current) {
-          inputTextAreaRef.current.focus();
+          inputTextAreaRef?.current?.focus(); //enable this before production
         }
       }, []);
 
@@ -1366,35 +1383,32 @@ const Tryit = () => {
     }, []);
 
 
-
-    // console.log(noRetyping.isSavingSentence)
-    // console.log(noRetyping.currrentHistoryIndex)
-    // console.log(componentStates.inputValueHistory.)
-
-
-    // setInterval(()=>{
-        // console.log('dialogOpen', componentStates.dialog.isOpen)
-    // }, 2000)
-
-    // console.log('AAAA: ', a.current)
-    // console.log('AAAA: ', a)
-
     return (
 
         <div 
-        className="min-h-screen w-[100%] border-gray-700 flex flex-col items-center"
+        className="
+        min-h-screen w-[100%] border-gray-700 flex flex-col items-center
+        dark:bg-gray-900
+        "
         // className="min-h-screen min-w-[100vw] border-gray-700 flex flex-col items-center bg-cyan-400"
         >
             <div className="
                     w-11/12 flex flex-col py-4
                     md:w-11/12 ">
 
-                <section className="md: border-4 border-gray-800">
-                    <header>
+                <section 
+                    className="
+                    relative
+                    flex items-center justify-center
+                    border-2 border-gray-800 
+                    md:border-4
+                    dark:border-gray-500 dark:text-gray-300 dark:border-opacity-50
+                    ">
+                    <header className="">
                         <h1 
                         className="
-                        text-center my-6 cursor-pointer
-                        md:text-3xl
+                        text-center my-3 cursor-pointer
+                        md:text-3xl md:my-6
                         "
                         aria-label="Sentence Checker "
                         aria-describedby= "This web application can be used to fix and correct mistakes in your write-up"
@@ -1402,6 +1416,13 @@ const Tryit = () => {
                         onClick={()=>reloadPage()}
                         >Text/SentenceChecker</h1>
                     </header>
+                    <span 
+                    className=" absolute flex right-0 mr-2 
+                                md:mr-8
+                    ">
+                        <DarkModeToggler />
+                    </span>
+
                 </section>
                 {/* <section className="md: min-h-8 flex flex-col my-4 border-4 border-gray-800" >
                     <div className="md: h-full flex flex-col gap-2">
@@ -1415,24 +1436,32 @@ const Tryit = () => {
                 </section> */}
                 <main 
                 className="
-                    min-w-full flex flex-col min-h-[90vh] mt-4
+                    min-w-full flex flex-col min-h-[120vh] mt-4
                     md:flex-row md:min-h-[50vh] md:gap-4 
                 " >
+                    {/* input value begins */}
                     <div
-                    className="flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 pt-4 gap-2 bg-black">
+                    className="flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 pt-4 gap-2 bg-[#1f0000]
+                    dark:border-gray-500
+                    ">
                         <div 
                         className="
                         w-full flex flex-col flex-wrap gap-4
                         md:flex-row md:flex-wrap md:justify-between md:items-center
-                        "
-                        >
+                        ">
                             <span                                 
                             // className="md:basis-5/6 "
-                            className="md:flex-grow-0"
-                            >
+                            className="
+                                flex  w-full items-center justify-center
+                                md:flex-grow-0 md:w-max
+                            ">
                                 <span
-                                className="md: border border-gray-300 px-4 py-1 rounded text-sm text-gray-100"
-                                >Output</span>
+                                className="
+                                w-full flex justify-center border border-gray-300 border-opacity-40 px-4 py-1 rounded text-sm text-gray-100 
+                                md:text-base
+                                dark:border-opacity-30
+                                "
+                                >Input</span>
                             </span>
                             <span 
                             className="text-gray-300 text-sm flex flex-row flex-wrap items-center justify-between 
@@ -1442,7 +1471,7 @@ const Tryit = () => {
                                 disabled={!noRetyping.isInputValuePresent}
                                 className={`md: font-medium ${!noRetyping.isInputValuePresent ? "text-gray-500" : ""}`}
                                 onClick={()=>componentFunctions().clearInputValue()}
-                                >Clear</button>
+                                >clear</button>
                                 <button
                                 className={`md: ${!noRetyping.isOlderHistoryEntryExists ? "text-gray-500" : ""}`}
                                 onClick={() => {componentFunctions().handleUndo()}}>
@@ -1468,21 +1497,21 @@ const Tryit = () => {
                                 }
                                 <span
                                 // className="basis-1/6 cursor-pointer"
-                                className={`contents cursor-pointer w-12 ${!noRetyping.isOutputValuePresent ? "invisible" : ""} md:flex`}
+                                className={`contents cursor-pointer w-12 ${!noRetyping.isInputValuePresent ? "invisible" : ""} md:flex`}
                                 onClick={()=> componentFunctions().handleCopyTextToClipboard({
-                                    text: componentStates.outputValue,
+                                    text: componentStates.inputValue,
                                     shouldThrowErrorOnFail: true,
-                                    name: "outputValueCopied",
+                                    name: "inputValueCopied",
                                     nameStatus: true
                                 })}
                                 >
                                     <button
                                     // className="md: float-right font-thin text-sm underline "
-                                    disabled={noRetyping.isOutputValueCopied}
-                                    className={`md: float-right text-sm  text-white ${!noRetyping.isOutputValuePresent ? "" : ""}`}
+                                    disabled={noRetyping.isInputValueCopied}
+                                    className={`md: float-right text-sm  text-white ${!noRetyping.isInputValuePresent ? "" : ""}`}
                                     >
                                         {
-                                        noRetyping.isOutputValueCopied ? 
+                                        noRetyping.isInputValueCopied ? 
                                         "copied" : 
                                         "copy"
                                         }
@@ -1493,18 +1522,20 @@ const Tryit = () => {
                         </div>
                         <div
                         className="
-                            flex-grow bg-red-300 flex flex-col
+                            flex-grow flex flex-col
                         ">
                             <textarea
-                            name="outputValue"
+                            name="inputValue"
                             ref={inputTextAreaRef}
                             onChange={(event) => componentFunctions().handleTextChange({event})}
                             className="
-                                flex-grow h-full w-full rounded-lg p-3 placeholder:text-sm 
+                                flex-grow h-full w-full rounded-lg p-3 placeholder:text-xs
+                                dark:bg-[#290000] dark:border dark:border-gray-400 
+                                dark:placeholder:text-white dark:text-white
                             "
-                            placeholder="...output text will be displayed here and can be edited or copied"
+                            placeholder="...type or paste the text that you want to fix here"
                             // defaultValue={"...the writeup will be displayed here after it has been fixed"}
-                            value={componentStates.outputValue}
+                            value={componentStates.inputValue}
                             />
                         </div>
                     </div>
@@ -1513,12 +1544,15 @@ const Tryit = () => {
                                 md:hidden
                     ">
                             {
-                            // componentStates.isCheckingSentence &&
+                            componentStates.isCheckingSentence &&
                             <LinearIndeterminateProgressBar />
                             }
                     </div>
+                    {/* output value begins */}
                     <div
-                    className="flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 pt-4 gap-2 bg-black">
+                    className="flex-1 flex flex-col border border-gray-700 rounded-lg p-2 py-6 pt-4 gap-2 bg-[#000b24]
+                    dark:border-gray-500
+                    ">
                         <div 
                         className="
                         w-full flex flex-col flex-wrap gap-4
@@ -1527,21 +1561,26 @@ const Tryit = () => {
                         >
                             <span                                 
                             // className="md:basis-5/6 "
-                            className="md:flex-grow-0"
-                            >
+                            className="
+                                flex  w-full items-center justify-center
+                                md:flex-grow-0 md:w-max
+                            ">
                                 <span
-                                className="md: border border-gray-300 px-4 py-1 rounded text-sm text-gray-100"
+                                className="
+                                w-full flex justify-center border border-gray-300 border-opacity-40 px-4 py-1 rounded text-sm text-gray-100 
+                                dark:border-opacity-30
+                                "
                                 >Output</span>
                             </span>
                             <span 
                             className="text-gray-300 text-sm flex flex-row flex-wrap items-center justify-between 
                             md:flex md:flex-grow
                             ">
-                                <button
+                                {/* <button
                                 disabled={!noRetyping.isInputValuePresent}
                                 className={`md: font-medium ${!noRetyping.isInputValuePresent ? "text-gray-500" : ""}`}
                                 onClick={()=>componentFunctions().clearInputValue()}
-                                >Clear</button>
+                                >Clear</button> */}
                                 <button
                                 className={`md: ${!noRetyping.isOlderHistoryEntryExists ? "text-gray-500" : ""}`}
                                 onClick={() => {componentFunctions().handleUndo()}}>
@@ -1553,7 +1592,7 @@ const Tryit = () => {
                                 onClick={() => {componentFunctions().handleRedo()}}>
                                     <RedoSvg />
                                 </button> 
-                                {
+                                {/* {
                                 // <>
                                 noRetyping.isSavingSentence ?
                                 <span className="w-10 flex items-center">...saving</span> :
@@ -1564,7 +1603,7 @@ const Tryit = () => {
                                     save
                                 </button> 
                                 // </>
-                                }
+                                } */}
                                 <span
                                 // className="basis-1/6 cursor-pointer"
                                 className={`contents cursor-pointer w-12 ${!noRetyping.isOutputValuePresent ? "invisible" : ""} md:flex`}
@@ -1592,14 +1631,16 @@ const Tryit = () => {
                         </div>
                         <div
                         className="
-                            flex-grow bg-red-300 flex flex-col
+                            flex-grow flex flex-col
                         ">
                             <textarea
                             name="outputValue"
                             ref={outputTextAreaRef}
                             onChange={(event) => componentFunctions().handleTextChange({event})}
                             className="
-                                flex-grow h-full w-full rounded-lg p-3 placeholder:text-sm 
+                                flex-grow h-full w-full rounded-lg p-3 placeholder:text-xs
+                                dark:bg-gray-800 dark:border dark:border-gray-400 
+                                dark:placeholder:text-white dark:text-white
                             "
                             placeholder="...output text will be displayed here and can be edited or copied"
                             // defaultValue={"...the writeup will be displayed here after it has been fixed"}
@@ -1610,15 +1651,16 @@ const Tryit = () => {
                 </main>
                 <section 
                 className="
-                    flex flex-col gap-1 mt-4 text-xs items-end
-                    md:gap-2
+                    flex flex-col gap-1 mt-4 text-xs
+                    md:gap-2 
+                    dark:text-gray-400
                 ">
-                    <div>{`Sentence checker is set to run every ${componentStates.sentenceCheckerApiDelay/1000} second(s)`}</div>
-                    <div>{`Autosave is set to run every ${componentStates.autoSaveDelay/1000} second(s)`}</div>
+                    <div>{`Sentence checker runs every ${componentStates.sentenceCheckerApiDelay/1000} second(s)`}</div>
+                    <div>{`Autosave runs every ${componentStates.autoSaveDelay/1000} second(s)`}</div>
                     <div 
                     className="md: flex flex-row items-center gap-4 cursor-pointer" 
                     onClick={()=>componentFunctions().openConfirmationDialogForSettings()}>
-                        <button className="md:underline" >
+                        <button className="underline dark:text-gray-300" >
                             Change Settings 
                         </button>
                         <SettingsSvg 
@@ -1628,19 +1670,33 @@ const Tryit = () => {
                 <section className="mt-8">
                         <div className="h-4">
                             {
-                            // componentStates.isCheckingSentence &&
+                            componentStates.isCheckingSentence &&
                             <LinearIndeterminateProgressBar />
                             }
                         </div>
                 </section>
-                <section className="md: flex flex-col gap-8 mt-8 border-4 border-gray-800 "
-                    >
+                <section 
+                className="flex flex-col border border-opacity-10 py-1 px-2  
+                            border-gray-800 
+                            md:gap-8 md:mt-8 md:px-0
+                            dark:border-gray-600
+                ">
 
                         {/* dont do this, just change the color of the button to a disabled shade or lighter color */}
                         {/* {!componentStates.isCheckingSentence && <button>Run</button>} */}
-                        <div className="md: flex flex-wrap gap-8" >
+                        <div 
+                        className="order-1 flex flex-col gap-4 
+                                   md:gap-8 md:flex-row md:flex-wrap 
+                        " >
                             <button 
-                            className={`md: bg-black text-gray-100 py-1 px-4 rounded ${!noRetyping.isInputValuePresent ? "bg-gray-400" : ""}`}
+                            disabled={noRetyping.isCheckingSentence}
+                            className={`
+                            w-[100%] text-sm
+                            bg-black text-gray-100 py-1 px-4 rounded 
+                            ${!noRetyping.isInputValuePresent ? "bg-gray-400 dark:bg-gray-700 dark:border-gray-800" : "md:hover:bg-blue-600 focus:bg-blue-600"}
+                            md:w-28 md:text-base
+                            dark:border-gray-400 dark:border
+                            `}
                             onClick={async()=>{
                                 try{
                                     await componentFunctions().requestSentenceCheckRemote({
@@ -1650,25 +1706,30 @@ const Tryit = () => {
                                 catch(err){
                                     //do anything
                                 }
-                            }}
-                            >
-                                Run 
+                            }}>
+                                {noRetyping.isCheckingSentence ? "...running" : "run"}
                             </button>
+
                             <span 
-                            className="md: text-sm flex flex-row items-center gap-8">
+                            className="  
+                            order-3 text-sm flex flex-row flex-wrap items-center gap-8 justify-center 
+                            md:order-2 md:text-sm md:flex md:flex-row md:items-center
+                            ">
                                 <button
                                 disabled={!noRetyping.isInputValuePresent}
-                                className={`md: font-medium ${!noRetyping.isInputValuePresent ? "text-gray-300" : ""}`}
+                                className={`
+                                font-medium ${!noRetyping.isInputValuePresent ? "text-gray-300 dark:text-gray-500" : "text-black dark:text-gray-300"}
+                                `}
                                 onClick={()=>componentFunctions().clearInputValue()}
-                                >Clear</button>
+                                >clear</button>
                                 <button
-                                className={`md: ${!noRetyping.isOlderHistoryEntryExists ? "text-gray-300" : ""}`}
+                                className={`md: ${!noRetyping.isOlderHistoryEntryExists ? "text-gray-300 dark:text-gray-500" : "text-black dark:text-gray-300"}`}
                                 onClick={() => {componentFunctions().handleUndo()}}>
                                     <UndoSvg />
                                 </button>
                                 <button
                                 // disabled={!noRetyping.isNewerHistoryEntryExists}
-                                className={`md: ${!noRetyping.isNewerHistoryEntryExists ? "text-gray-300" : ""}`}
+                                className={`md: ${!noRetyping.isNewerHistoryEntryExists ? "text-gray-300 dark:text-gray-500" : "text-black dark:text-gray-300"}`}
                                 onClick={() => {componentFunctions().handleRedo()}}>
                                     <RedoSvg />
                                 </button> 
@@ -1677,17 +1738,18 @@ const Tryit = () => {
                                 <span className="w-10">...saving</span> :
                                 <button
                                 disabled={componentStates.inputValue === noRetyping.lastSavedInputValue || componentStates.inputValue.trim()===""}
-                                className={`md:w-10 ${((componentStates.inputValue === noRetyping.lastSavedInputValue) || componentStates.inputValue.trim()==="")  ? "text-gray-300" : ""}`}
+                                className={`w-10 ${((componentStates.inputValue === noRetyping.lastSavedInputValue) || componentStates.inputValue.trim()==="")  ? "text-gray-300 dark:text-gray-500" : "text-black dark:text-gray-300"}`}
                                 onClick={() => {componentFunctions().saveDataToSessionStorage({text: componentStates.inputValue})}}>
                                     save
                                 </button> 
                                 }
                             </span>
-                            {
-                            // noRetyping.isOutputValuePresent &&
-                            <span className="md: min-w-32 overflow-hidden">
+                            <span 
+                            className="order-2 w-[100%] overflow-hidden text-sm
+                                        md:order-3 md:w-max md:text-base
+                            ">
                                 <button 
-                                className={`md: w-full bg-blue-500 text-gray-100 py-1 px-4 rounded ${!noRetyping.isOutputValuePresent ? "invisible" : ""}`}
+                                className={`w-full bg-blue-500 text-gray-100 py-1 px-8 rounded ${!noRetyping.isOutputValuePresent ? "invisible" : ""}`}
                                 disabled={noRetyping.isOutputValueCopied}
                                 onClick={()=> componentFunctions().handleCopyTextToClipboard({
                                     text: componentStates.outputValue,
@@ -1697,21 +1759,25 @@ const Tryit = () => {
                                 })}>
                                     {
                                     noRetyping.isOutputValueCopied ?
-                                    "Copied" : "Copy Output"
+                                    "copied" : "Copy output"
                                     }
                                 </button>
                             </span>
-                            }   
 
                             
                         </div>
                 </section>
-                <section className="md: flex flex-col gap-8 mt-16 border-4 border-gray-800 py-4"
-                    >
-                        <div className="md: pl-5 underline">HISTORY</div>
+                <section 
+                className="flex flex-col gap-8 mt-16 border border-opacity-50 border-gray-800 py-4
+                md:mt-16
+                dark:border-gray-500 dark:text-gray-300
+                ">
+                        <div className="md: pl-5">HISTORY</div>
                 </section>
-                <section className="md:border-4 border-gray-800 mb-4">
-                    <div className="md: flex flex-col gap-4 py-4">
+                <section 
+                className="mb-4
+                ">
+                    <div className="flex flex-col gap-4 py-4">
                         <div className="md:pl-5">
                             {
                             noRetyping.isAnySavedHistoryEntryExists &&
@@ -1727,7 +1793,9 @@ const Tryit = () => {
                                     Redo
                                 </button> */}
                                 <button 
-                                className="bg-black text-gray-100 py-1 px-4 rounded"
+                                className="bg-black text-gray-100 py-1 px-4 rounded text-sm md:text-base
+                                dark:border dark:border-gray-600
+                                "
                                 onClick={() => {componentFunctions().openConfirmationDialogForClearingAllOldEntriesIncludingCurrent()}} >
                                     Clear History
                                 </button>
@@ -1760,21 +1828,33 @@ const Tryit = () => {
                             return (
                             <div 
                             key={entry.id} 
-                            className={`md:flex flex-col gap-2 list-item border border-gray-300 pl-5 ${componentStates.inputValue === entry.text ? "relative before:content-['\\2192'] before:absolute before:left-0 before:text-blue-500" : ""}`}>
-                                <div className="md: flex gap-4 flex-wrap items-center ">
+                            className={`
+                             flex flex-col gap-2 list-item border border-gray-300 pl-5 ${componentStates.inputValue === entry.text ? "relative before:content-['\\2192'] before:absolute before:left-0 before:text-blue-500" : ""}
+                            md:flex md:flex-col
+                            dark:text-gray-300 dark:border-opacity-40
+                            `}>
+                                <div className="flex gap-2 flex-wrap items-center 
+                                                md:gap-4
+                                ">
                                     <span 
-                                    className="md: text-xs w-36 " >
+                                    className="text-xs w-36 " >
                                         {new Date(entry.timestamp).toLocaleString()}
                                     </span>
                                     <span >
                                         <button 
                                         disabled={componentStates.inputValue === entry.text}
-                                        className={`md: w-20 text-xs px-4 py-[2px] 
-                                        ${ componentStates.inputValue === entry.text ? "bg-black text-white border border-gray-700 rounded" : 
-                                        "bg-white text-black border border-gray-700 rounded" } `}
+                                        className={`
+                                        w-20 text-xs px-4 py-[2px] border-opacity-30
+                                        ${ componentStates.inputValue === entry.text ? "bg-black text-white border border-gray-700 rounded dark:border dark:border-gray-500" : 
+                                        "bg-white text-black border border-gray-700 rounded md:hover:bg-blue-200 focus:bg-blue-200" } 
+                                        
+                                        `}
                                         onClick={()=>{
                                             componentFunctions().setInputValue({inputValue: entry.text});
                                             componentFunctions().setCurrentIndexOfInputValueHistory({newCurrentIndex: mapIndex})
+                                            inputTextAreaRef?.current?.focus()
+                                            inputTextAreaRef?.current?.scrollIntoView({behavior: "smooth"})
+
                                             // console.log(mapIndex)
                                         }}
                                         >
@@ -1783,8 +1863,8 @@ const Tryit = () => {
                                     </span>
                                     {/* <span>index:  {entry.index}</span> */}
                                 </div>
-                                <div>
-                                    <p >
+                                <div className="my-2">
+                                    <p className="break-words pr-4 font-light text-sm">
                                         { getFirst5AndLast5Words({text: entry.text})}
                                     </p>
                                 </div>
@@ -1810,6 +1890,8 @@ const Tryit = () => {
                     </ConfirmationDialog>
                     <FadeInDialog
                     key={String(componentStates.dialogs.fadeInDialog.id)+String(componentStates.dialogs.fadeInDialog.isOpen)}
+                    autoCloseAfterSeconds={7}
+                    showCloseTimeSeconds={true}
                     // key={generateRandomString({})}
                     // key={Math.random()}
                     // key={String(componentStates.dialogs.fadeInDialog.isOpen)+String(componentStates.dialogs.fadeInDialog.children)}
@@ -1820,6 +1902,38 @@ const Tryit = () => {
                         {componentStates.dialogs.fadeInDialog.children}
                     </FadeInDialog>
                 </section>
+
+                <footer className=" py-4 text-xs
+                                    md:text-sm
+                                    dark:text-white
+                ">
+                    <div className="container mx-auto text-center">
+                        <nav aria-label="Footer Navigation" className="mb-4">
+                        <ul className="flex justify-center items-center space-x-4 gap-4 opacity-50 ">
+                            <li>
+                            <a href="https://jiboladev.com" className="hover:text-gray-400" target="_blank" rel="noopener noreferrer">
+                                <WebsiteLinkSvg className="size-[1.3rem] md:size-6" />
+                            </a>
+                            </li>
+                            <li>
+                            <a href="https://www.linkedin.com/in/jibolashittubolu" className="hover:text-gray-400" target="_blank" rel="noopener noreferrer">
+                                <LinkedInSvg className="size-[1.5rem] md:size-6" />
+                            </a>
+                            </li>
+                            <li>
+                            <a href="https://github.com/jibolashittubolu" className="hover:text-gray-400" target="_blank" rel="noopener noreferrer">
+                                {/* <GithubSvg className="size-5 md:size-5"/> */}
+                                <GithubSvg className="size-[1.1rem] md:size-5"/>
+                            </a>
+                            </li>
+                        </ul>
+                        </nav>
+                        <p className="opacity-60" >&copy; 2024 Jibola-Shittu Moboluwarin</p>
+                        <p className="opacity-60">All rights reserved.</p>
+                    </div>
+                </footer>
+
+
 
             </div>
             

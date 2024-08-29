@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 
 interface FadeInDialogProps {
@@ -7,6 +7,8 @@ interface FadeInDialogProps {
     isModal?: boolean;
     children: ReactNode,
     showDefaultCloserButton?: boolean;
+    autoCloseAfterSeconds?: number,
+    showCloseTimeSeconds?: boolean
     // color?: string
     // key: Key;
     // onConfirm: () => void;
@@ -14,7 +16,43 @@ interface FadeInDialogProps {
   }
 
 
-const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal = true, children, showDefaultCloserButton=true, }) => {
+const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal = true, children, showDefaultCloserButton=true, autoCloseAfterSeconds, showCloseTimeSeconds=false }) => {
+
+  const [remainingTime, setRemainingTime] = useState<number>(autoCloseAfterSeconds || 0);
+  // console.log(remainingTime)
+
+
+  // useEffect(() => {
+  //   if (isOpen && autoCloseAfterSeconds) {
+  //     const timer = setTimeout(() => {
+  //       onClose();
+  //     }, autoCloseAfterSeconds*1000);
+  //     //multiply by 1000 to convert to seconds
+
+  //     // Cleanup timer if component unmounts or isOpen changes
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [isOpen, autoCloseAfterSeconds, onClose]);
+
+  useEffect(() => {
+    if (isOpen && autoCloseAfterSeconds) {
+        setRemainingTime(autoCloseAfterSeconds);
+        const timer = setInterval(() => {
+            setRemainingTime(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    onClose();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000); // Update every second
+
+        // Cleanup interval if component unmounts or isOpen changes
+        return () => clearInterval(timer);
+    }
+}, [isOpen, autoCloseAfterSeconds, onClose]);
+
   return (
     <>
       {isOpen && (
@@ -26,6 +64,16 @@ const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal =
             <div>
                 <button onClick={onClose}>Ok (x)</button>
             </div>
+            }
+            {
+            showCloseTimeSeconds && 
+            autoCloseAfterSeconds && 
+            remainingTime > 0 
+            && (
+                <div className="timer">
+                    Closing in {remainingTime} seconds...
+                </div>
+            )
             }
             {children}
             {/* <button onClick={onClose}>Close</button> */}
@@ -54,10 +102,11 @@ const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal =
           border: 1px solid #ccc;
           border-radius: 8px;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          padding: 1rem;
+          padding: 0.6rem;
           opacity: 0;
           animation: fadeIn 0.5s forwards;
           font-size: 0.8rem;
+          {/* background-color: pink;d */}
         }
 
         .dialog-content {
@@ -91,13 +140,17 @@ const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal =
           background-color: black;
           color: white;
           border: none;
-          padding: 5px 9px;
+          padding: 4px 8px;
           cursor: pointer;
-          border-radius: 4px;
+          border-radius: 3px;
         }
 
         .dialog-content button:hover {
           background-color: #0056b3;
+        }
+
+        .timer{
+          font-size: 0.6rem;
         }
       `}</style>
     </>
