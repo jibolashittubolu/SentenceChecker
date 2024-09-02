@@ -1,9 +1,9 @@
 "use server"
-import { Tryit } from "./SentenceChecker"
+import { SentenceChecker } from "./SentenceChecker"
 
 
 const Page = () => {
-  return <Tryit />
+  return <SentenceChecker />
 }
 
 export default Page
