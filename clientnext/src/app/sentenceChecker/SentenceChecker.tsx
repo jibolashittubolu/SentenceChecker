@@ -146,7 +146,7 @@ const MIN_SENTENCE_CHECKER_DELAY: number = 1 * 1000 // 1 second
 
 // let a = false;
 
-const Tryit = () => {
+const SentenceChecker = () => {
 
     const [componentStates, setComponentStates] = useState<TypeInitialTryitState>({
         error: {
@@ -373,7 +373,7 @@ const Tryit = () => {
                 });
     
 
-                let message : string = "Output is ready"
+                let message : string = "output is ready"
 
                 let htmlMessage : ReactNode 
                 htmlMessage = <div>
@@ -389,7 +389,7 @@ const Tryit = () => {
                             outputTextAreaRef?.current?.focus();
                             handleDialog({whichDialog: "FadeInDialog", isOpen: false})
                         }}  
-                        >Jump to output box</button>
+                        >jump to output box</button>
                         <button 
                         className="bg-black text-white px-2 py-1 rounded"
                         onClick={()=>{
@@ -402,10 +402,10 @@ const Tryit = () => {
                             })
                             handleDialog({whichDialog: "FadeInDialog", isOpen: false})
                         }}
-                        >Copy output</button>
+                        >copy output</button>
                     </div>
                     <div className="mt-2">
-                        <span className="text-green-600 ">Success : </span>
+                        <span className="text-green-600 ">success : </span>
                         <span>{message}</span>
                     </div>
 
@@ -650,7 +650,7 @@ const Tryit = () => {
             //we keep only 5 at a time
             try {
                 //now we dont need to check if the modal is open because for us to get here, the button to click this was actually rendered
-                console.log(noRetyping.isConfirmationDialogOpen)
+                // console.log(noRetyping.isConfirmationDialogOpen)
                 //check if the modal is open for it, we can add a name prop to the modal and attach the function signature or name to it so that we can keep track of if the modal has been called e.g using console.log(clearAllOldEntriesIncludingCurrent.name) we can attach it to the modal
                 //but for now, since the modal doesnt allow outside clicks we can keep it simple
 
@@ -663,7 +663,7 @@ const Tryit = () => {
                     })
                     // setSaveHistory(history);
                 }
-                console.log('history cleared successfully')
+                // console.log('history cleared successfully')
             } 
             catch (error) {
                 console.error('Error clearing old entries:', error);
@@ -1401,14 +1401,14 @@ const Tryit = () => {
                     relative
                     flex items-center justify-center
                     border-2 border-gray-800 
-                    md:border-4
+                    md:border-4 md:border-gray-700
                     dark:border-gray-500 dark:text-gray-300 dark:border-opacity-50
                     ">
                     <header className="">
                         <h1 
                         className="
                         text-center my-3 cursor-pointer
-                        md:text-3xl md:my-6
+                        md:text-2xl 
                         "
                         aria-label="Sentence Checker "
                         aria-describedby= "This web application can be used to fix and correct mistakes in your write-up"
@@ -1437,7 +1437,7 @@ const Tryit = () => {
                 <main 
                 className="
                     min-w-full flex flex-col min-h-[120vh] mt-4
-                    md:flex-row md:min-h-[50vh] md:gap-4 
+                    md:flex-row md:min-h-[60vh] md:gap-4 
                 " >
                     {/* input value begins */}
                     <div
@@ -1667,7 +1667,7 @@ const Tryit = () => {
                         className="md: text-red-500 w-4 h-4 cursor-pointer "/>
                     </div>
                 </section>
-                <section className="mt-8">
+                <section className="mt-8 md:mt-6">
                         <div className="h-4">
                             {
                             componentStates.isCheckingSentence &&
@@ -1678,7 +1678,7 @@ const Tryit = () => {
                 <section 
                 className="flex flex-col border border-opacity-10 py-1 px-2  
                             border-gray-800 
-                            md:gap-8 md:mt-8 md:px-0
+                            md:gap-8 md:mt-2 md:px-0
                             dark:border-gray-600
                 ">
 
@@ -1694,7 +1694,7 @@ const Tryit = () => {
                             w-[100%] text-sm
                             bg-black text-gray-100 py-1 px-4 rounded 
                             ${!noRetyping.isInputValuePresent ? "bg-gray-400 dark:bg-gray-700 dark:border-gray-800" : "md:hover:bg-blue-600 focus:bg-blue-600"}
-                            md:w-28 md:text-base
+                            md:w-28 md:text-sm
                             dark:border-gray-400 dark:border
                             `}
                             onClick={async()=>{
@@ -1928,7 +1928,7 @@ const Tryit = () => {
                             </li>
                         </ul>
                         </nav>
-                        <p className="opacity-60" >&copy; 2024 Jibola-Shittu Moboluwarin</p>
+                        <p className="opacity-60" >&copy; {new Date().getFullYear()} Jibola-Shittu Moboluwarin</p>
                         <p className="opacity-60">All rights reserved.</p>
                     </div>
                 </footer>
@@ -1943,4 +1943,4 @@ const Tryit = () => {
     )
 }
 
-export {Tryit}
+export {SentenceChecker}

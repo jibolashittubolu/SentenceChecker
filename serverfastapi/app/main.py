@@ -12,10 +12,10 @@ load_dotenv()
 # load_dotenv(dotenv_path=dotenv_path)
 
 PORT = os.getenv("PORT", 6000)
-print("PORT IS: ,", PORT)
+# print("PORT IS: ,", PORT)
 
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS").split(",")
-print(ALLOWED_ORIGINS)
+# print(ALLOWED_ORIGINS)
 # Initialize FastAPI app
 app = FastAPI()
 

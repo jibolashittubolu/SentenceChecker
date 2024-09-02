@@ -28,7 +28,7 @@ class SentenceCheckerService implements ISentenceCheckerService {
   public async checkSentence({
     data
   } : {data: IFastApiReqBodySentenceChecker}) {
-    console.log(data)
+    // console.log(data)
 
 
     const checkedSentence = await this.sendSentenceToFastApi({
@@ -61,6 +61,7 @@ class SentenceCheckerService implements ISentenceCheckerService {
       //   err?.message,
       //   err
       // );
+      console.log(err)
       
       throw new AppError(HttpStatusCode.INTERNAL_SERVER, "An internal error occurred");
     }

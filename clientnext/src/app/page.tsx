@@ -1,10 +1,10 @@
 "use server";
-import { Tryit } from "./tryit/Tryit";
+import { SentenceChecker } from "./sentenceChecker/SentenceChecker";
 
 const Home = () => {
 
   return (
-    <Tryit />
+    <SentenceChecker />
   );
 };
 export default Home;

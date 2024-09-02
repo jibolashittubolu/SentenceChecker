@@ -1,5 +1,5 @@
 "use server"
-import { Tryit } from "./Tryit"
+import { Tryit } from "./SentenceChecker"
 
 
 const Page = () => {
