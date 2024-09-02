@@ -12,7 +12,10 @@ import { getFirst5AndLast5Words } from "@/utils/stringManipulation"
 import { ConfirmationDialog } from "@/components/dialogs"
 import { FadeInDialog } from "@/components/dialogs/FadeInDialog"
 import { generateRandomString } from "@/utils/random/generateRandomString"
-import DarkModeToggler from "@/components/darkModeToggler/DarkModeToggler.toggler"
+import dynamic from "next/dynamic"
+// import DarkModeToggler from "@/components/darkModeToggler/DarkModeToggler.toggler"
+
+const DarkModeToggler = dynamic(()=> import("@/components/darkModeToggler/DarkModeToggler.toggler"), {ssr: false}) //for named export
 
 type TypeResSentenceChecker = {
     // data: {

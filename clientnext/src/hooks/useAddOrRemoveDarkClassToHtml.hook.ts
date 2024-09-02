@@ -7,6 +7,7 @@ export interface InterfaceUseAddOrRemoveDarkClassToHtml {
 }
 
 export type TypeLightOrDarkLiteralString = "light" | "dark"
+
 const useAddOrRemoveDarkClassToHtml = () : InterfaceUseAddOrRemoveDarkClassToHtml =>  {
 
     // const [colorScheme, setColorScheme] = useState<TypeLightOrDarkLiteralString>("dark");
