@@ -27,19 +27,29 @@ process.on("uncaughtException", (err: Error) => {
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
   process.exit(err ? 1 : 0);
 });
-
+const allowedHosts = [
+  "sentence-checker.jiboladev.com",
+  "http://localhost:8002",
+  "http://localhost:8001",
+  "http://localhost:8003",
+]
 // Define allowed IP addresses
-const allowedIps = ["127.0.0.1", "89.116.52.114", '::1', "::ffff:127.0.0.1"]; // Replace with the IP address of server1
+const allowedIps = ["89.116.52.114", "127.0.0.1", '::1', "::ffff:127.0.0.1"]; // Replace with the IP address of server1
 
 // Middleware to validate the IP address
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const clientIp = req.headers['x-forwarded-for'] as string || req.ip || "";
+  const clientIp = req?.headers?.['x-forwarded-for'] as string || req.ip || "";
+  const requestHost = req?.headers?.['host'] as string || "";
   
   // console.log(req.ip)
   if (allowedIps.includes(clientIp)) {
     next(); // IP is allowed, proceed with the request
-  } else {
-    res.status(403).send('Forbidden: Access denied');
+  }
+  if(allowedHosts.includes(requestHost)){
+    next()
+  } 
+  else {
+    res.status(403).send('Forbidden: Access denied. Origin/Host');
   }
 });
 

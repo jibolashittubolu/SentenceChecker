@@ -29,29 +29,21 @@ const useAddOrRemoveDarkClassToHtml = () : InterfaceUseAddOrRemoveDarkClassToHtm
 
 
 
-    // //this is done before the use layout effect to prevent FOUC
-    // if ((localStorage.getItem('color-scheme') === 'dark' )|| (!('color-scheme' in localStorage) || window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    //     document.documentElement.classList.add('dark');
-    //     localStorage.setItem('color-scheme', "dark");
-    //     console.log('fired firasj')
-    // } 
-    // else {
-    //     document.documentElement.classList.remove('dark')
-    //     localStorage.setItem('color-scheme', "light");
-    //     console.log('fired firasj 222')
 
-    // }
-
+    //for initial state
     useLayoutEffect(() => {
+        // console.log('layout effect fired')
 
-        const addOrRemoveDarkClassToHtml = () => {
+        const initialAddOrRemoveDarkClassToHtml = () => {
             try{
-                if ((localStorage.getItem('color-scheme') === 'dark' )|| (!('color-scheme' in localStorage) || window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                // if ((localStorage.getItem('color-scheme') === 'dark' )|| (!('color-scheme' in localStorage) || window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                if ((localStorage.getItem('color-scheme') === 'dark' )|| (!('color-scheme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                // if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                     localStorage.setItem('color-scheme', "dark");
                     setColorScheme('dark');
 
-                    return
+                    // return
                 } 
                 else {
                     document.documentElement.classList.remove('dark')
@@ -64,7 +56,29 @@ const useAddOrRemoveDarkClassToHtml = () : InterfaceUseAddOrRemoveDarkClassToHtm
                 console.error(error)
             }
         }
-        addOrRemoveDarkClassToHtml()
+        initialAddOrRemoveDarkClassToHtml()
+    }, [])
+
+    //for change
+    useLayoutEffect(() => {
+        // console.log('ran this too')
+        const updateHtmlAndLocalStorageColorScheme = () => {
+            try{
+                if(colorScheme === "dark"){
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-scheme', "dark");
+                }
+                //i.e light
+                else {
+                    document.documentElement.classList.remove('dark')
+                    localStorage.setItem('color-scheme', "light");
+                }
+            }
+            catch(error: any){
+                console.error(error)
+            }
+        }
+        updateHtmlAndLocalStorageColorScheme()
     }, [colorScheme])
 
 
