@@ -44,7 +44,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onClose
                 background-color: rgba(0, 0, 0, 0.5);
             }
         `}</style>
-        <dialog ref={dialogRef} onClose={onClose} >
+        <dialog ref={dialogRef} onClose={onClose} className="dark:bg-gray-900 dark:text-gray-300" >
             {
             showDefaultCloserButton &&
             <div>

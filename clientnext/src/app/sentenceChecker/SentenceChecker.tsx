@@ -339,7 +339,8 @@ const SentenceChecker = () => {
                     let message : string = "Please fill in the input box with your text/sentence"
 
                     let htmlMessage : ReactNode 
-                    htmlMessage = <div>
+                    htmlMessage = 
+                    <div className="dark:bg-gray-900 dark:text-gray-300">
                         <span className="text-red-700">Issue : </span>
                         <span>{message}</span>
                     </div>
@@ -379,7 +380,8 @@ const SentenceChecker = () => {
                 let message : string = "output is ready"
 
                 let htmlMessage : ReactNode 
-                htmlMessage = <div>
+                htmlMessage = 
+                <div className="dark:bg-gray-900 dark:text-gray-300">
                     <div 
                     className="
                         flex flex-row flex-wrap gap-2 mt-0.5
@@ -421,7 +423,9 @@ const SentenceChecker = () => {
                 console.error(error)
                 // console.log('An error occurred')
                 // _openDialog({whichDialog: "FadeInDialog"})
-                let message: string= "An error occurred while fetching the  correct sentence from the remote server"
+                let message: ReactNode = <p className="dark:bg-gray-900 dark:text-gray-300">
+                    An error occurred while fetching the  correct sentence from the remote server
+                </p>
                 const addAndShowErrorDiv = (children: ReactNode) => { 
                     return <div className="text-red-700">{children || message}</div>
                 }
@@ -429,7 +433,7 @@ const SentenceChecker = () => {
 
 
                 _setErrorFull({
-                    message,
+                    message:"An error occurred while fetching the  correct sentence from the remote server",
                     others: error
                 })
                 handleDialog({whichDialog: "FadeInDialog", isOpen: true, children:message })
@@ -442,7 +446,8 @@ const SentenceChecker = () => {
                     // })
 
                     let htmlMessage : ReactNode 
-                    htmlMessage = <div>
+                    htmlMessage = 
+                    <div className="dark:bg-gray-900 dark:text-gray-300">
                         <span className="text-red-700">Issue : </span>
                         <span>{message}</span>
                     </div>
@@ -682,11 +687,14 @@ const SentenceChecker = () => {
                 // console.log(noRetyping.isDialogOpen)
 
                 const dialogChildren:ReactNode = 
-                <div className="md: flex flex-col gap-4">
+                <div 
+                className="flex flex-col gap-4 p-4 
+                            dark:bg-gray-900 dark:border dark:border-gray-700
+                ">
                     <div onClick={()=>_closeDialog({whichDialog: "ConfirmationDialog"})}>
-                        <CancelSvg  className="md: text-red-500 w-8 h-8 cursor-pointer " />
+                        <CancelSvg  className="md: text-red-500 size-4 cursor-pointer md:size-8 " />
                     </div>
-                    <div className="md: text-sm">This will clear all entries... proceed?</div>
+                    <div className="text-sm dark:text-gray-300">This will clear all entries... proceed?</div>
                     <div className="md: flex flex-row gap-8 text-sm mt-4">
                         <button className="md: px-6 py-1.5 rounded bg-black text-white" onClick={()=>{
                             _clearAllOldEntriesIncludingCurrent(); //why does this not work ???
@@ -1163,7 +1171,8 @@ const SentenceChecker = () => {
                 let message : string = error?.message || "Could not copy text to clipboard"
 
                 let htmlMessage : ReactNode 
-                htmlMessage = <div>
+                htmlMessage = 
+                <div className="dark:bg-gray-900 dark:text-gray-300">
                     <span className="text-red-700">Issue : </span>
                     <span>{message}</span>
                 </div>

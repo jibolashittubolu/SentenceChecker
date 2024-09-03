@@ -56,9 +56,10 @@ const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal =
   return (
     <>
       {isOpen && (
-        <div className="dialog">
+        <div className="dialog dark:bg-gray-900 dark:text-gray-300">
           <div className="dialog-content">
             {/* <p>{message}</p> */}
+            <div className='flex flex-row justify-between w-full items-center'>
             {
             showDefaultCloserButton &&
             <div>
@@ -75,6 +76,7 @@ const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal =
                 </div>
             )
             }
+            </div>
             {children}
             {/* <button onClick={onClose}>Close</button> */}
           </div>
@@ -98,8 +100,8 @@ const FadeInDialog : React.FC<FadeInDialogProps> = ({ isOpen, onClose, isModal =
           top: 1rem;
           right: 1rem;
           z-index: 1000;
-          background-color: rgba(255, 255, 255, 1);
-          border: 1px solid #ccc;
+          {/* background-color: rgba(255, 255, 255, 1); */}
+          border: 1px solid gray;
           border-radius: 8px;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           padding: 0.6rem;
