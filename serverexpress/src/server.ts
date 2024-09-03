@@ -1,4 +1,4 @@
-import express, { Express, Request, Response , Application } from 'express';
+import express, { Express, Request, Response , Application, NextFunction } from 'express';
 import {config} from 'dotenv';
 import cors from 'cors'
 import helmet from "helmet";
@@ -15,6 +15,8 @@ const PORT = process.env.PORT;
 const app: Application = express();
 
 
+
+
 // Handle all uncaught eceptions from the begining
 process.on("uncaughtException", (err: Error) => {
   logger.debug(
@@ -26,11 +28,25 @@ process.on("uncaughtException", (err: Error) => {
   process.exit(err ? 1 : 0);
 });
 
+// Define allowed IP addresses
+const allowedIps = ["127.0.0.1", "89.116.52.114", '::1', "::ffff:127.0.0.1"]; // Replace with the IP address of server1
+
+// Middleware to validate the IP address
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const clientIp = req.headers['x-forwarded-for'] as string || req.ip || "";
+  
+  // console.log(req.ip)
+  if (allowedIps.includes(clientIp)) {
+    next(); // IP is allowed, proceed with the request
+  } else {
+    res.status(403).send('Forbidden: Access denied');
+  }
+});
 
 app.use(cors());
 // app.use(express.json());
-app.use(express.json({ limit: '1024kb' }));
-app.use(express.urlencoded({ limit: '1024kb', extended: true }));
+app.use(express.json({ limit: '10240kb' }));
+app.use(express.urlencoded({ limit: '10240kb', extended: true }));
 
 // // // parse application/x-www-form-urlencoded
 // app.use(bodyParser.urlencoded({ extended: false }))

@@ -52,7 +52,7 @@ class SentenceCheckerService implements ISentenceCheckerService {
       return result.data
       // return result
     }
-    catch(err: any){
+    catch(error: any){
       // logger.debug(
       //   err?.message,
       //   err
@@ -61,7 +61,35 @@ class SentenceCheckerService implements ISentenceCheckerService {
       //   err?.message,
       //   err
       // );
-      console.log(err)
+      console.log("error occurred")
+      // console.log(err)
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        const status = error?.response?.status;
+        const message = error?.response?.data?.detail || 'An error occurred';
+  
+        if (status >= 400 && status < 500) {
+          console.error(`Client Error (${status}): ${message}. Please check your request data.`);
+          throw new AppError(HttpStatusCode.BAD_REQUEST,`Client Error (${status}): ${message}. Please check your request data.`);
+
+        } 
+        else if (status >= 500) {
+          console.error(`Server Error (${status}): ${message}. Please try again later.`);
+          throw new AppError(HttpStatusCode.INTERNAL_SERVER,`Server Error (${status}): ${message}. Please try again later.`);
+
+        }
+      } 
+      else if (error.request) {
+        // The request was made but no response was received
+        console.error('Network Error: Unable to reach the upstream server. ');
+        throw new AppError(HttpStatusCode.INTERNAL_SERVER, "Internal Server Error. Unable to reach the upstream server.");
+
+      } 
+      else {
+        // Something happened in setting up the request that triggered an Error
+        console.error(`Unexpected Error: ${error.message}`);
+      }
       
       throw new AppError(HttpStatusCode.INTERNAL_SERVER, "An internal error occurred");
     }

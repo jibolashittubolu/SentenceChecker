@@ -8,7 +8,7 @@
     "dev": "tsc-watch -b --onSuccess \"npm run start2\"",
     "clean": "rimraf dist",
     "build": "npm run clean && npx tsc",
-    "start": "npx pm2 start ecosystem.config.js --env production",
+    "start": "node ./dist/src/server.js",
     "start2": "node ./dist/src/server.js",
     "js-nodemon": "nodemon dist/src/server.js",
     "ts-nodemon": "nodemon src/server.ts"

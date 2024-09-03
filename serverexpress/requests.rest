@@ -31,10 +31,10 @@ Content-Type: application/json
 
 
 //CHECK SENTENCE   
-###        
+###          
 POST http://localhost:8001/api/v1/sentenceChecker/checkSentence
 Content-Type: application/json
- 
-{  
-    "text": "TO DO fali"
+  
+{    
+    "text": "TO DO fali" 
 }
