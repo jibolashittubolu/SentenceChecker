@@ -5,11 +5,10 @@
   "main": "./src/server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc-watch -b --onSuccess \"npm run start2\"",
+    "dev2": "tsc-watch -b --onSuccess \"npm run start2\"",
     "clean": "rimraf dist",
     "build": "npm run clean && npx tsc",
     "start": "node ./dist/src/server.js",
-    "start2": "node ./dist/src/server.js",
     "js-nodemon": "nodemon dist/src/server.js",
     "ts-nodemon": "nodemon src/server.ts"
   },
