@@ -11,6 +11,11 @@ pyvenv.cfg
 .env.test.local
 .env.production.local
 
+#for ubuntu
+/bin
+/lib
+/lib64
+
 # from other sources
 .idea
 .ipynb_checkpoints
