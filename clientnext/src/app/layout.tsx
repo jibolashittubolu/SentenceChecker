@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sentence/Text Checker Web App",
-  description: "You can write in it and it will automatically help you to fix your grammatical errors. Developed by Moboluwarin Jibola-Shittu, https:jiboladev.com",
+  title: "Sentence/Text Checker Web App by JibolaDev",
+  description: "You can write any text it and it will automatically help you to fix your grammatical errors. Developed by Moboluwarin Jibola-Shittu, https:jiboladev.com",
 };
 
 export default function RootLayout({

@@ -1,0 +1,16 @@
+{
+  "name": "Sentence Checker by JibolaDev",
+  "short_name": "Sentence Checker by JibolaDev",
+  "description": "You can write any text it and it will automatically help you to fix your grammatical errors. Developed by Moboluwarin Jibola-Shittu, https:jiboladev.com",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+} 
