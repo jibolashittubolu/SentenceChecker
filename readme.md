@@ -1,4 +1,4 @@
-Clone the repository. Please note that ----
+Clone the repository. Please note that ---
 
 - The 3 folders contained within the repository are all required
 - The clientnext server is the client application
