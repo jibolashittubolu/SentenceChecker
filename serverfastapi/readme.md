@@ -1,5 +1,5 @@
 # DOWNLOAD AND INSTALL PYTHON ON YOUR MACHINE (if python does not exist) from python.org or install python 3.7.9 from [official python 3.7.9](https://www.python.org/downloads/release/python-379/)
-
+ 
 # open your machine's CLI terminal and navigate to the directory serverfastapi i.e where this file exists using "cd serverfastapi"
 # create a virtual environment in this folder by executing "python -m venv ." in your terminal
 
