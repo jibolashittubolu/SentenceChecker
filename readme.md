@@ -1,4 +1,4 @@
-[This Project is Live on](https://sentence-checker.jiboladev.com)
+[This Project is Live on Sentence-Checker](https://sentence-checker.jiboladev.com)
 
 Clone the repository. Please note that -- 
 
