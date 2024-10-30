@@ -1,6 +1,6 @@
 import express, { Express, Request, Response , Application, NextFunction } from 'express';
 import {config} from 'dotenv';
-import cors from 'cors'
+import cors from 'cors';
 import helmet from "helmet";
 import ComponentsRouter from './components/components.router';
 import { logger } from "./utils";
