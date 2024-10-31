@@ -1,6 +1,6 @@
 "use server"
 
-import dynamic from "next/dynamic"
+import dynamic from "next/dynamic" 
 
 import { SentenceChecker } from "./SentenceChecker"
 
