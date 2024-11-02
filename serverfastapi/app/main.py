@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ValidationError
 import language_tool_python
 from typing import List
-import logging
+import logging 
 import os
 from dotenv import load_dotenv
 load_dotenv()
