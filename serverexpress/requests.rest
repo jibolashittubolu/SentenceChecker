@@ -1,6 +1,6 @@
 @base_url = http://localhost:5000
 @API_KEY = aim_for_better
-
+ 
 //CREATE WALLET
 ###  
 POST {{$base_url}}/api/
