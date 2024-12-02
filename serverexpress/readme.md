@@ -3,7 +3,7 @@
 # CHECK THAT Node.js IS INSTALLED by typing and running "node --version" in your cli
 
 # open your machine's CLI terminal and navigate to the directory "serverexpress" i.e where this file exists
-# type and execute "npm install" to install the project's dependencies
+# type and execute "npm install" to install the project's dependencies 
 
 
 # SET UP ENVIRONMENTAL VARIABLES
