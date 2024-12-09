@@ -6,7 +6,7 @@ Clone the repository. Please note that --
 - The clientnext server is the client application
 - The serverexpress is the proxy server
 - The serverfastapi is the upstream server 
-
+ 
 - To utilize the application, you are required to start an instance of each so that they can connect with each other
 
 - The documentation for starting up each server/app is contained within the readme.md of their respective folders
