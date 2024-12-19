@@ -1,6 +1,7 @@
 from app.api.v1.mainV1 import v1
 from app.api.v2.mainV2 import v2
 
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
