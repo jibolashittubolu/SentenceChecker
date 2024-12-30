@@ -4,7 +4,7 @@ import {
   appendError,
   errorFactory,
   logger
-} from "../../utils";
+} from "../../utils"; 
 
 class ErrorHandler {
   public async handle(err: Error, req: Request, res: Response, next: NextFunction) {
