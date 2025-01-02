@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from "axios"
 
 class AxiosFunctions {
     public axiosPost = async ({url, body, options}: {
-        url: string,
+        url: string, 
         body: any,
         options?: AxiosRequestConfig
     }) => {
