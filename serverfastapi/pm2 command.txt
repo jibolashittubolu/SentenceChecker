@@ -1,1 +1,1 @@
-pm2 start "venv/bin/uvicorn main:app --host ${0.0.0.0 or dont specify any host}  --port ${your port number} --workers 2" --name my-fastapi-app
+pm2 start "venv/bin/uvicorn main:app --host ${0.0.0.0 or dont specify any host}  --port ${your port number} --workers 2" --name my-fastapi-app 
