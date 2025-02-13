@@ -2,3 +2,4 @@ pm2 start server.js --name "my-nodejs-app"  ->for normal node js
 pm2 start npm --name "app-name" -- start   ->for next
 pm2 startup
 pm2 save
+
