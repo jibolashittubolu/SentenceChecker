@@ -9,6 +9,7 @@ def read_items():
 def readItemA():
     return {"message": "Version 2. ,A"}
 
+
 @router.post("/")
 def create_item():
     return {"message": "Version 2. Item created"}
