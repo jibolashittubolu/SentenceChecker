@@ -9,8 +9,6 @@ import RouterV2 from "./v2/v2.router";
 // import VendorSystemRouter from "./VendorSystem/vendorSystem.router";
 
 const router: Router = Router();
-
-
 // Use routes
 router.use("/v1", RouterV1);
 router.use("/v2", RouterV2);
