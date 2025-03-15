@@ -6,6 +6,8 @@ import {
   HttpStatusCode
 } from "./ResponseHandling";
 
+
+
 // This funtion is for checking the environment
 export function isDevEnvironment() {
   const env = process.env.APP_ENVIRONMENT;
