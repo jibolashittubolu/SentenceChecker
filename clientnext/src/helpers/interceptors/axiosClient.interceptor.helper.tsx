@@ -4,7 +4,6 @@ import axios, { AxiosResponse } from 'axios';
 interface CustomHeaders {
   'x-version'?: string; // optional, as headers might not always include this field
 }
-
 const axiosClientInterceptor = axios.create()
 // Add the response interceptor
 axiosClientInterceptor.interceptors.response.use(
