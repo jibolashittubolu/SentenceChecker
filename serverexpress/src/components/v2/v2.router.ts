@@ -9,8 +9,6 @@ import TagsRouter from "./tags/tags.router";
 // import VendorSystemRouter from "./VendorSystem/vendorSystem.router";
 
 const router: Router = Router();
-
-
 // Use routes
 router.use("/sentenceChecker", SentenceCheckerRouter);
 router.use("/tags", TagsRouter);
