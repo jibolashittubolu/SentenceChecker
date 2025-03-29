@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from "react"
 
-
 // debounce function (defaults wait to .2 seconds)
 const debounce = ({func, wait = 0}: {
     func: Function,
