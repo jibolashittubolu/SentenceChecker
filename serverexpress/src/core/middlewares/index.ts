@@ -1,1 +1,1 @@
-export { default as errorHandler } from "./errors.middleware";
+export { default as errorHandler  } from "./errors.middleware";
