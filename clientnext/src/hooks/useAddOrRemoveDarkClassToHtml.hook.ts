@@ -5,7 +5,6 @@ export interface InterfaceUseAddOrRemoveDarkClassToHtml {
     updateColorScheme: (newScheme: TypeLightOrDarkLiteralString) => void,
     // toggleColorScheme: () => void,
 }
-
 export type TypeLightOrDarkLiteralString = "light" | "dark"
 
 const useAddOrRemoveDarkClassToHtml = () : InterfaceUseAddOrRemoveDarkClassToHtml =>  {
