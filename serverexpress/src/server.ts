@@ -15,8 +15,6 @@ const PORT = process.env.PORT;
 const app: Application = express();
 
 
-
-
 // Handle all uncaught eceptions from the begining
 process.on("uncaughtException", (err: Error) => {
   logger.debug(
