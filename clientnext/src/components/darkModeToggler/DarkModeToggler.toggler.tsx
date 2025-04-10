@@ -10,6 +10,8 @@ const DarkModeToggler = () => {
     // console.log("from hook", colorScheme)
     // console.log("current color scheme", currentColorScheme)
 
+
+    
     const toggleColorSchemePlusLocalStoragePlusHtml = () => {
         try{
             // if set via local storage previously
