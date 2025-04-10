@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import useAddOrRemoveDarkClassToHtml, {InterfaceUseAddOrRemoveDarkClassToHtml, TypeLightOrDarkLiteralString} from '../../hooks/useAddOrRemoveDarkClassToHtml.hook'
 import { CrescentMoonSvg, SunSvg } from '../icons/svgs';
 
-
 const DarkModeToggler = () => {
     const {colorScheme, updateColorScheme } = useAddOrRemoveDarkClassToHtml() as  InterfaceUseAddOrRemoveDarkClassToHtml
     // const {colorScheme } = useAddOrRemoveDarkClassToHtml() as  InterfaceUseAddOrRemoveDarkClassToHtml
