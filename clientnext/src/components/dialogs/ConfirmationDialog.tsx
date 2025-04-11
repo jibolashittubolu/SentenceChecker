@@ -11,6 +11,7 @@ interface ConfirmationDialogProps {
     // onCancel: () => void
   }
 
+
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onClose, isModal = true, children, showDefaultCloserButton=true}) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
