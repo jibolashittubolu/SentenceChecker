@@ -10,6 +10,8 @@ def read_users():
 def showSingleUser():
     return {"message": "Version 2. Single User"}
 
+
+
 @router.post("/")
 def create_user():
     return {"message": "Version 2. User created"}
