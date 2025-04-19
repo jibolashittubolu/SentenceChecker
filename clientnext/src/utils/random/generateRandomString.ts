@@ -15,3 +15,4 @@ const generateRandomString = ({length = 10}: {length?: number}): string => {
 //   console.log(randomString);
 
 export {generateRandomString}
+
