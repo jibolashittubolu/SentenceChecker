@@ -5,7 +5,6 @@ class CustomError extends Error {
   public customType: string;
   public others: any;
 
-
   constructor(
     params :{
         message?: string,
