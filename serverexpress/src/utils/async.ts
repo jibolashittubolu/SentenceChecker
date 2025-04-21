@@ -8,7 +8,6 @@ const catchAsync = (fn: any) => {
 };
 
 export default catchAsync;
-
 // import { Request, Response, NextFunction } from "express";
 
 // const catchAsync = (
