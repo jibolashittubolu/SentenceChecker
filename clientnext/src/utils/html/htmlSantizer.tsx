@@ -10,7 +10,6 @@ export const HtmlRenderer = ({ htmlString } : {htmlString: string})  => {
 };
 
 
-
 export const sanitizeHtml = ({ htmlString } : {htmlString: string}) : string => {
     const sanitizedHtmlString = DOMPurify.sanitize(htmlString);
   
