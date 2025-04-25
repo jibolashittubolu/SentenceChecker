@@ -32,7 +32,6 @@ import { CustomError } from "../errorHandling";
 
 // }
 
-
 const copyTextToClipboard = async ({text, shouldThrowErrorOnFail=false}:{
     text: string, 
     shouldThrowErrorOnFail?:boolean
