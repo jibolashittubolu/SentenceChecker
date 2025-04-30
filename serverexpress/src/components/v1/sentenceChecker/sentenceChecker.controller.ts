@@ -43,7 +43,6 @@ class SentenceCheckerController implements ISentenceCheckerController {
       return successResponse(res, HttpStatusCode.OK, "Sentence checked and corrected successfully", checkedSentence);
     });
   
-
   }
   
 const sentenceCheckerController = new SentenceCheckerController(sentenceCheckerService);
