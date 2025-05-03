@@ -1,5 +1,6 @@
 const LinearIndeterminateProgressBar = () => {
   return (
+    
     <>
     <style jsx>{`
         {/* body {
