@@ -18,4 +18,6 @@ const successResponse = (
   return res.status(statusCode).send(responseObject);
 };
 
+
+
 export default successResponse;
