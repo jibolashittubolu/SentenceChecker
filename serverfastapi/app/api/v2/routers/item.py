@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 router = APIRouter()
 
+
+
 @router.get("/")
 def read_items():
     return {"message": "Version 2. List of items"}
