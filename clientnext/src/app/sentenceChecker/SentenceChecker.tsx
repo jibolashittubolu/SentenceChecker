@@ -17,6 +17,8 @@ import dynamic from "next/dynamic"
 
 const DarkModeToggler = dynamic(()=> import("@/components/darkModeToggler/DarkModeToggler.toggler"), {ssr: false}) //for named export
 
+
+
 type TypeResSentenceChecker = {
     // data: {
         data: {
