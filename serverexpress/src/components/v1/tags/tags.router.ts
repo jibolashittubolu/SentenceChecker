@@ -9,7 +9,6 @@ const router: Router = Router();
 // Routes
 
 
-
 // *Catch-all route
 router.all("*", (req: Request, res: Response) => {
   return res.status(404).send("Invalid URI. v1 tags");
